@@ -1,16 +1,18 @@
 import argparse
 import csv
-from typing import Any
 
 from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
+from utils.types import RawRecords
 
 
 def main():
-    args: argparse.Namespace = initialize_argparse_engine()
-    raw_records: list[dict] = load_csv_file(args)
+    args = initialize_argparse_engine()
+    raw_records = load_csv_file(args)
+    cleaned_records = clean_csv_file(raw_records)
+    
 
 
-def load_csv_file(args: argparse.Namespace) -> list[dict[str | Any, str | Any]]:
+def load_csv_file(args: argparse.Namespace) -> RawRecords:
 
     if not does_csv_file_exists(args.raw_csv_file_cli_input):
         raise ValueError(f"CSV file not found: {args.raw_csv_file_cli_input}")
@@ -25,7 +27,8 @@ def load_csv_file(args: argparse.Namespace) -> list[dict[str | Any, str | Any]]:
     return raw_records
 
 
-def func_2(): ...
+def clean_csv_file(raw_records: RawRecords) -> RawRecords:
+    ...
 
 
 def func_3(): ...
