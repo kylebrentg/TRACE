@@ -1,7 +1,9 @@
+import argparse
 import sys
 
 import pytest
 
+from project import load_csv_file
 from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
 
 # --- initialize_argparse_engine ---
@@ -61,3 +63,14 @@ def test_returns_true_for_directory(tmp_path):
 
 def test_returns_false_for_empty_string():
     assert does_csv_file_exists("") is False
+
+
+# --- load_csv_file ---
+
+
+def test_load_csv_file_raises_when_file_has_no_data_rows(tmp_path):
+    csv_file = tmp_path / "empty.csv"
+    csv_file.write_text("col1,col2\n")  # header only, no data rows
+    args = argparse.Namespace(raw_csv_file_cli_input=str(csv_file))
+    with pytest.raises(ValueError, match="is empty"):
+        load_csv_file(args)
