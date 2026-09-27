@@ -7,6 +7,7 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+.mypy_cache/
 
 # Environments & Virtual Environments
 .venv/
@@ -24,5 +25,6 @@ ENV/
 # IDE / Editor settings
 .zed/
 
-# Raw data
+# Others
 data/
+my_notes/
