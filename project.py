@@ -2,15 +2,12 @@ import argparse
 import csv
 from typing import Any
 
-from utils.debugging.checking_records import check_records
 from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
 
 
 def main():
     args: argparse.Namespace = initialize_argparse_engine()
     raw_records: list[dict] = load_csv_file(args)
-
-    check_records(raw_records)
 
 
 def load_csv_file(args: argparse.Namespace) -> list[dict[str | Any, str | Any]]:
@@ -21,6 +18,10 @@ def load_csv_file(args: argparse.Namespace) -> list[dict[str | Any, str | Any]]:
     with open(args.raw_csv_file_cli_input, newline="") as file:
         reader = csv.DictReader(file)
         raw_records = list(reader)
+
+        if not raw_records:
+            raise ValueError(f"{args.raw_csv_file_cli_input} is empty: {raw_records}")
+            
     return raw_records
 
 
