@@ -1,5 +1,13 @@
+
+import argparse
+
+from utils.loading.argparse_engine import parse_args
+
+
 def main():
-  ...
+  args = parse_args()
+    
+  
 
 def func_1():
   ...
