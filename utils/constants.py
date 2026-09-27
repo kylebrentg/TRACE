@@ -31,16 +31,16 @@ class CSVStandard:
     HEADERS_LENGTH: ClassVar[int] = len(HEADERS)
 
     SCHEMA: ClassVar[dict[str, type]] = {
-        OFFENSE_TYPE:          str,
-        OFFENSE_NAME:          str,
-        MODUS_OPERANDI:        str,
-        DATE_COMMITTED:        date,
-        TIME_COMMITTED:        time,
-        BARANGAY:              str,
-        LATITUDE:              float,
-        LONGITUDE:             float,
+        OFFENSE_TYPE: str,
+        OFFENSE_NAME: str,
+        MODUS_OPERANDI: str,
+        DATE_COMMITTED: date,
+        TIME_COMMITTED: time,
+        BARANGAY: str,
+        LATITUDE: float,
+        LONGITUDE: float,
         POLICE_STATION_NUMBER: str,
-        CASE_STATUS:           str,
+        CASE_STATUS: str,
     }
 
     BARANGAY_NAMES: ClassVar[frozenset[str]] = frozenset(

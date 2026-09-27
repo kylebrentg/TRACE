@@ -29,3 +29,5 @@ ENV/
 data/
 my_notes/
 sandbox.py
+context_files/
+.ruff_cache/
