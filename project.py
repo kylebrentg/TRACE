@@ -1,16 +1,19 @@
 
 import argparse
 
-from utils.loading.argparse_engine import parse_args
+from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
 
 
 def main():
-  args = parse_args()
-    
+  args: argparse.Namespace = initialize_argparse_engine()
+  raw_records: list[dict] = load_csv_file(args)
   
 
-def func_1():
-  ...
+def load_csv_file(args: argparse.Namespace) -> list[dict]:
+
+  if not does_csv_file_exists(args.raw_csv_file_cli_input):
+    raise ValueError(f"CSV file not found: {args.raw_csv_file_cli_input}")
+    
 
 def func_2():
   ...
