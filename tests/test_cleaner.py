@@ -1,4 +1,4 @@
-from utils.cleaning.cleaner import normalize_headers
+from utils.cleaning.header_cleaner import normalize_headers
 
 # --- normalize_headers ---
 
