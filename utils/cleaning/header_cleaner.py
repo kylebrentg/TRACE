@@ -5,6 +5,7 @@ from rapidfuzz import fuzz, process
 from utils.constants import CSVStandard
 from utils.helper.data_viewer import view_list, view_rapid_fuzz_results
 from utils.helper.program_tools import exit_now
+from utils.helper.user_facing import display_raw_headers_remaining
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
 # --- cleaning csv headers ---
@@ -46,9 +47,14 @@ def rapidfuzz_header_matching(
     # 1. Prepare data needed
     raw_headers = list(next(iter(raw_records)).keys())
     official_headers = CSVStandard.HEADERS
+
     raw_headers_matched: list[str] = [
         header["raw_header"] for header in running_headers_matched
     ]
+    official_headers_matched = [
+        header["raw_header"] for header in running_headers_matched
+    ]
+
     headers_ready_for_matching: list[HeaderMatchingScorer] = []
 
     # 2. Perform RapidFuzz process
@@ -72,8 +78,6 @@ def rapidfuzz_header_matching(
             }
         )
 
-    # view_rapid_fuzz_results(rapidfuzz_results, "All RapidFuzz Results")
-
     # 3. Only choose the high scores (>= 90) from the result
     high_score_results: list[HeaderMatchingScorer] = []
     for result in sorted(
@@ -89,15 +93,21 @@ def rapidfuzz_header_matching(
 
         high_score_results.append(result)
         raw_headers_matched.append(result["raw_header"])
+        official_headers_matched.append(result["official_header"])
 
     headers_ready_for_matching.extend(high_score_results)
 
     # 4. Manually match headers where scores are less than 90
-    for header in raw_headers:
-        if header in raw_headers_matched:
+    for header in official_headers:
+        if header in official_headers_matched:
             continue
-        print(header)
-    # view_rapid_fuzz_results(headers_ready_for_matching, "Headers that are ready for matching!")
+
+        display_raw_headers_remaining(raw_headers_matched, raw_records)
+        
+
+          
+
+        
 
     exit_now()
     # return rapidfuzz_results
