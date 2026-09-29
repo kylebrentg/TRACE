@@ -1,7 +1,10 @@
+
+
 from rapidfuzz import fuzz, process
 
 from utils.constants import CSVStandard
 from utils.helper.data_viewer import view_list, view_rapid_fuzz_results
+from utils.helper.user_facing import manual_header_matching
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
 # --- cleaning csv headers ---
@@ -90,7 +93,31 @@ def rapidfuzz_header_matching(
         high_score_results.append(result)
         raw_headers_matched.append(result["raw_header"])
         official_headers_matched.append(result["official_header"])
-
+        
     headers_ready_for_matching.extend(high_score_results)
 
     return headers_ready_for_matching
+
+
+def manual_header_matching_step(
+    raw_records: ListOfRecords,
+    running_headers_matched: list[HeaderMatchingScorer],
+) -> list[HeaderMatchingScorer]:
+    """Manually match any official headers that weren't matched by prior steps."""
+    official_headers = CSVStandard.HEADERS
+
+    raw_headers_matched = [
+        header["raw_header"] for header in running_headers_matched
+    ]
+    official_headers_matched = [
+        header["official_header"] for header in running_headers_matched
+    ]
+
+    official_headers_remaining = [
+        header for header in official_headers if header not in official_headers_matched
+    ]
+
+    return manual_header_matching(
+        official_headers_remaining, raw_headers_matched, raw_records
+    )
+

@@ -3,6 +3,7 @@ import csv
 
 from utils.cleaning.header_cleaner import (
     instant_header_matching,
+    manual_header_matching_step,
     normalize_headers,
     rapidfuzz_header_matching,
 )
@@ -27,7 +28,7 @@ def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
         raw_records = list(reader)
 
         if not raw_records:
-            raise ValueError(f"{args.raw_csv_file_cli_in} is empty: {raw_records}")
+            raise ValueError(f"{args.raw_csv_file_cli_input} is empty: {raw_records}")
 
     return raw_records
 
@@ -46,7 +47,12 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
         rapidfuzz_header_matching(records_headers_normalized, headers_matched)
     )
 
-    view_rapid_fuzz_results(headers_matched)
+    # 4. Manually match remaining headers
+    headers_matched.extend(
+        manual_header_matching_step(records_headers_normalized, headers_matched)
+    )
+
+    view_rapid_fuzz_results(headers_matched, "PINALLY")
 
 
 def func_3(): ...
