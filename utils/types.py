@@ -1,3 +1,3 @@
 from typing import Any
 
-RawRecords = list[dict[str | Any, str | Any]]
+ListOfRecords = list[dict[str | Any, str | Any]]

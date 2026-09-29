@@ -1,10 +1,10 @@
 import argparse
 import csv
 
-from utils.cleaning.cleaner import normalize_headers
+from utils.cleaning.cleaner import instant_header_match, normalize_headers
 from utils.debugging.checking_records import check_records, view_headers_only
 from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
-from utils.types import RawRecords
+from utils.types import ListOfRecords
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     cleaned_records = clean_csv_file(raw_records)
 
 
-def load_csv_file(args: argparse.Namespace) -> RawRecords:
+def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
 
     if not does_csv_file_exists(args.raw_csv_file_cli_input):
         raise ValueError(f"CSV file not found: {args.raw_csv_file_cli_input}")
@@ -23,13 +23,20 @@ def load_csv_file(args: argparse.Namespace) -> RawRecords:
         raw_records = list(reader)
 
         if not raw_records:
-            raise ValueError(f"{args.raw_csv_file_cli_input} is empty: {raw_records}")
+            raise ValueError(f"{args.raw_csv_file_cli_in} is empty: {raw_records}")
 
     return raw_records
 
 
-def clean_csv_file(raw_records: RawRecords):
+def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:    
+  
     raw_records_headers_normalized = normalize_headers(raw_records)
+
+    headers_matched_raw_records: set = instant_header_match(raw_records_headers_normalized)
+    print(headers_matched_raw_records)
+
+  
+    
 
     # return raw_records_headers_normalized
 
