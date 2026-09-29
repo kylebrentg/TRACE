@@ -1,11 +1,7 @@
-import sys
-
 from rapidfuzz import fuzz, process
 
 from utils.constants import CSVStandard
 from utils.helper.data_viewer import view_list, view_rapid_fuzz_results
-from utils.helper.program_tools import exit_now
-from utils.helper.user_facing import display_raw_headers_remaining
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
 # --- cleaning csv headers ---
@@ -97,17 +93,4 @@ def rapidfuzz_header_matching(
 
     headers_ready_for_matching.extend(high_score_results)
 
-    # 4. Manually match headers where scores are less than 90
-    for header in official_headers:
-        if header in official_headers_matched:
-            continue
-
-        display_raw_headers_remaining(raw_headers_matched, raw_records)
-        
-
-          
-
-        
-
-    exit_now()
-    # return rapidfuzz_results
+    return headers_ready_for_matching
