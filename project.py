@@ -53,9 +53,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
         manual_header_matching_step(records_headers_normalized, headers_matched)
     )
 
-    raw_records_headers_updated: ListOfRecords = update_records_headers(records_headers_normalized, headers_matched)
-
-    view_records(raw_records_headers_updated, "Updated Headers Records")
+    raw_records_headers_updated: ListOfRecords = update_records_headers(
+        records_headers_normalized, headers_matched
+    )
 
 
 def func_3(): ...

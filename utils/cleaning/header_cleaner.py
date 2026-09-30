@@ -136,4 +136,17 @@ def update_records_headers(
         for record in raw_records
     ]
 
-    return records_with_headers_updated
+    # Rearranging headers to abide to the schema
+    official_headers_in_order: tuple = CSVStandard.HEADERS
+
+    records_with_headers_arranged = [
+        {
+            official_header: record[official_header]
+            for official_header in official_headers_in_order
+            for header in record
+            if official_header == header
+        }
+        for record in records_with_headers_updated
+    ]
+
+    return records_with_headers_arranged
