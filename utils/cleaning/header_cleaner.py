@@ -6,6 +6,33 @@ from utils.helper.program_tools import exit_now
 from utils.helper.user_facing import manual_header_matching
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
+
+def clean_headers(raw_records: ListOfRecords):
+    headers_matched: list[HeaderMatchingScorer] = []
+
+    # 1. Normalize headers
+    records_headers_normalized = normalize_headers(raw_records)
+
+    # 2. Determine matched headers
+    headers_matched.extend(instant_header_matching(records_headers_normalized))
+
+    # 3. Match headers via rapidfuzz
+    headers_matched.extend(
+        rapidfuzz_header_matching(records_headers_normalized, headers_matched)
+    )
+
+    # 4. Manually match remaining headers
+    headers_matched.extend(
+        manual_header_matching_step(records_headers_normalized, headers_matched)
+    )
+
+    raw_records_headers_updated: ListOfRecords = update_records_headers(
+        records_headers_normalized, headers_matched
+    )
+
+    return raw_records_headers_updated
+
+
 # --- cleaning csv headers ---
 
 

@@ -2,15 +2,11 @@ import argparse
 import csv
 
 from utils.cleaning.header_cleaner import (
-    instant_header_matching,
-    manual_header_matching_step,
-    normalize_headers,
-    rapidfuzz_header_matching,
-    update_records_headers,
+    clean_headers,
 )
-from utils.helper.data_viewer import view_rapid_fuzz_results, view_records
+from utils.helper.data_viewer import view_records
 from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
-from utils.types import HeaderMatchingScorer, ListOfRecords
+from utils.types import ListOfRecords
 
 
 def main():
@@ -35,27 +31,9 @@ def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
 
 
 def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
-    headers_matched: list[HeaderMatchingScorer] = []
+    raw_records_headers_cleaned = clean_headers(raw_records)
 
-    # 1. Normalize headers
-    records_headers_normalized = normalize_headers(raw_records)
-
-    # 2. Determine matched headers
-    headers_matched.extend(instant_header_matching(records_headers_normalized))
-
-    # 3. Match headers via rapidfuzz
-    headers_matched.extend(
-        rapidfuzz_header_matching(records_headers_normalized, headers_matched)
-    )
-
-    # 4. Manually match remaining headers
-    headers_matched.extend(
-        manual_header_matching_step(records_headers_normalized, headers_matched)
-    )
-
-    raw_records_headers_updated: ListOfRecords = update_records_headers(
-        records_headers_normalized, headers_matched
-    )
+    view_records(raw_records_headers_cleaned)
 
 
 def func_3(): ...
