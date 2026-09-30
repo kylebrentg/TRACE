@@ -6,8 +6,9 @@ from utils.cleaning.header_cleaner import (
     manual_header_matching_step,
     normalize_headers,
     rapidfuzz_header_matching,
+    update_records_headers,
 )
-from utils.helper.data_viewer import view_rapid_fuzz_results
+from utils.helper.data_viewer import view_rapid_fuzz_results, view_records
 from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
@@ -52,7 +53,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
         manual_header_matching_step(records_headers_normalized, headers_matched)
     )
 
-    view_rapid_fuzz_results(headers_matched, "PINALLY")
+    raw_records_headers_updated: ListOfRecords = update_records_headers(records_headers_normalized, headers_matched)
+
+    view_records(raw_records_headers_updated, "Updated Headers Records")
 
 
 def func_3(): ...

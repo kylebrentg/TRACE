@@ -1,9 +1,8 @@
-
-
 from rapidfuzz import fuzz, process
 
 from utils.constants import CSVStandard
-from utils.helper.data_viewer import view_list, view_rapid_fuzz_results
+from utils.helper.data_viewer import view_list, view_rapid_fuzz_results, view_records
+from utils.helper.program_tools import exit_now
 from utils.helper.user_facing import manual_header_matching
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
@@ -93,7 +92,7 @@ def rapidfuzz_header_matching(
         high_score_results.append(result)
         raw_headers_matched.append(result["raw_header"])
         official_headers_matched.append(result["official_header"])
-        
+
     headers_ready_for_matching.extend(high_score_results)
 
     return headers_ready_for_matching
@@ -106,9 +105,7 @@ def manual_header_matching_step(
     """Manually match any official headers that weren't matched by prior steps."""
     official_headers = CSVStandard.HEADERS
 
-    raw_headers_matched = [
-        header["raw_header"] for header in running_headers_matched
-    ]
+    raw_headers_matched = [header["raw_header"] for header in running_headers_matched]
     official_headers_matched = [
         header["official_header"] for header in running_headers_matched
     ]
@@ -121,3 +118,22 @@ def manual_header_matching_step(
         official_headers_remaining, raw_headers_matched, raw_records
     )
 
+
+def update_records_headers(
+    raw_records: ListOfRecords, headers_to_match: list[HeaderMatchingScorer]
+) -> ListOfRecords:
+
+    raw_and_official_headers: dict[str, str] = {
+        header["raw_header"]: header["official_header"] for header in headers_to_match
+    }
+
+    records_with_headers_updated = [
+        {
+            raw_and_official_headers[header]: record[header]
+            for header in record
+            if header in raw_and_official_headers
+        }
+        for record in raw_records
+    ]
+
+    return records_with_headers_updated
