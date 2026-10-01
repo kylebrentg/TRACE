@@ -49,9 +49,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     raw_records_headers_cleaned: ListOfRecords = raw_records.copy()
 
-    # raw_records_offense_type_column_cleaned = clean_column_offense_type(
-    #     raw_records_headers_cleaned
-    # )
+    raw_records_offense_type_column_cleaned = clean_column_offense_type(
+        raw_records_headers_cleaned
+    )
 
 
 def func_3(): ...
