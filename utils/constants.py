@@ -6,25 +6,23 @@ class CSVStandard:
     # Column names
     OFFENSE_TYPE = "offense_type"
     OFFENSE_NAME = "offense_name"
-    MODUS_OPERANDI = "modus_operandi"
     DATE_COMMITTED = "date_committed"
     TIME_COMMITTED = "time_committed"
     BARANGAY = "barangay"
+    TYPE_OF_PLACE = "type_of_place"
     LATITUDE = "latitude"
     LONGITUDE = "longitude"
-    POLICE_STATION_NUMBER = "police_station_number"
     CASE_STATUS = "case_status"
 
     HEADERS: ClassVar[tuple[str, ...]] = (
         OFFENSE_TYPE,
         OFFENSE_NAME,
-        MODUS_OPERANDI,
         DATE_COMMITTED,
         TIME_COMMITTED,
         BARANGAY,
+        TYPE_OF_PLACE,
         LATITUDE,
         LONGITUDE,
-        POLICE_STATION_NUMBER,
         CASE_STATUS,
     )
 
@@ -33,13 +31,12 @@ class CSVStandard:
     SCHEMA: ClassVar[dict[str, type]] = {
         OFFENSE_TYPE: str,
         OFFENSE_NAME: str,
-        MODUS_OPERANDI: str,
         DATE_COMMITTED: date,
         TIME_COMMITTED: time,
         BARANGAY: str,
+        TYPE_OF_PLACE: str,
         LATITUDE: float,
         LONGITUDE: float,
-        POLICE_STATION_NUMBER: str,
         CASE_STATUS: str,
     }
 
