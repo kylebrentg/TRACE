@@ -18,9 +18,11 @@ from utils.types import ListOfRecords
 
 
 def main():
-    args = initialize_argparse_engine()
-    raw_records = load_csv_file(args)
-    cleaned_records = clean_csv_file(raw_records)
+    # Temporary comment to focus on a specific feature instead of starting over again
+    # args = initialize_argparse_engine()
+    # raw_records = load_csv_file(args)
+    # cleaned_records = clean_csv_file(raw_records)
+    _ = clean_csv_file(load_pickle_file("data/interim/2025_crime_records.pkl"))
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -39,15 +41,10 @@ def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
 
 
 def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
-    raw_records_headers_cleaned = clean_headers(raw_records)
+    # Temporary comment. Working on other feature
+    # raw_records_headers_cleaned = clean_headers(raw_records)
 
-    pkl_file_path = save_record_to_pickle(
-        "data/interim/2025_crime_records.pkl", raw_records_headers_cleaned
-    )
-
-    view_records(load_pickle_file(pkl_file_path), "This is a PKL File Records:")
-
-    
+    view_records(raw_records)
 
 
 def func_3(): ...
