@@ -44,8 +44,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Temporary comment. Working on other feature
     # raw_records_headers_cleaned = clean_headers(raw_records)
 
-    view_records(raw_records)
+    raw_records_headers_cleaned = raw_records[:]
 
+    clean_column_offense_type(raw_records_headers_cleaned)
 
 def func_3(): ...
 
