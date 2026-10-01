@@ -77,3 +77,25 @@ class CSVStandard:
             "Virgen Delos Remedios",
         }
     )
+    NULL_VALUE_PLACEHOLDERS: ClassVar[frozenset[str]] = frozenset(
+        {
+            "",
+            "nan",
+            "null",
+            "none",
+            "n/a",
+            "na",
+            "n.a.",
+            "not available",
+            "not applicable",
+            "not reported",
+            "not stated",
+            "not provided",
+            "undefined",
+            "unknown",
+            "?",
+            "-",
+            "--",
+            "---",
+        }
+    )

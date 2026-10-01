@@ -13,6 +13,6 @@ def clean_column_offense_type(
         record[CSVStandard.OFFENSE_TYPE] for record in raw_records_headers_cleaned
     ]
 
-    # view_list(offense_type_raw_values, "Raw Values before General String Cleaning")
-    values_general_cleaned =  general_string_values_cleaning(offense_type_raw_values) 
-    view_list(values_general_cleaned, "New Values after General String Cleaning")
+    view_list(offense_type_raw_values, "Raw Values before General String Cleaning")
+    values_cleaned = general_string_values_cleaning(offense_type_raw_values)
+    view_list(values_cleaned, "New Values after General String Cleaning")

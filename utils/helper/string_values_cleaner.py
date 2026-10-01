@@ -1,6 +1,7 @@
 import re
 import unicodedata
 
+from utils.constants import CSVStandard
 from utils.helper.data_viewer import view_list
 from utils.helper.program_tools import exit_now
 
@@ -12,11 +13,12 @@ def general_string_values_cleaning(column_raw_values: list[str]) -> list[str]:
         cleaned_value = clean_invisible_characters(raw_value)
         cleaned_value = standardize_punctuation(cleaned_value)
         cleaned_value = tidy_spacing(cleaned_value)
+        cleaned_value = convert_fake_nulls(cleaned_value)
 
         cleaned_values.append(cleaned_value)
 
-    view_list(cleaned_values, representation=True)
-    exit_now()
+    # view_list(cleaned_values, representation=True)
+    # exit_now()
 
     return cleaned_values
 
@@ -41,16 +43,8 @@ def clean_invisible_characters(text: str) -> str:
 
 # General Cleaning 2
 def standardize_punctuation(text: str) -> str:
-    # Step 1: Turn curly single quotes and smart apostrophes into standard straight quotes.
-    # (Example: 'O’Connor' or ‘quoted’ becomes plain keyboard 'O\'Connor' or 'quoted').
     text = re.sub(r"[‘’‚‛`]", "'", text)
-
-    # Step 2: Turn curly double quotes into standard straight double quotes.
-    # (Example: “Hello” or „Hello” becomes plain keyboard "Hello").
     text = re.sub(r"[“”„‟«»]", '"', text)
-
-    # Step 3: Turn long dashes (em-dash, en-dash, minus signs) into standard hyphens.
-    # (Example: Word's auto-formatted 'cost — benefit' becomes 'cost - benefit').
     text = re.sub(r"[–—−֊־᐀‐‑‒–—―]", "-", text)
 
     return text
@@ -58,12 +52,24 @@ def standardize_punctuation(text: str) -> str:
 
 # General Cleaning 3
 def tidy_spacing(text: str) -> str:
-    # Step 1: Collapse repeated spaces between words down to exactly one single space.
-    # (Example: 'Hello      world' becomes 'Hello world'. The regex \s+ catches any run of spaces).
     text = re.sub(r"\s+", " ", text)
-
-    # Step 2: Remove spaces from the very beginning and very end of the entire string.
-    # (Example: ' Hello world ' becomes 'Hello world').
     text = text.strip()
+
+    return text
+
+
+# General Cleaning 4
+def convert_fake_nulls(text: str | None) -> str | None:
+    # Step 1: If already None, keep it as None
+    if text is None:
+        return None
+
+    # Step 2: Skip non-string data types (e.g., numbers, booleans)
+    if not isinstance(text, str):
+        return text
+
+    # Step 3: Strip whitespace and check if lowercased text is a placeholder
+    if text.strip().lower() in CSVStandard.NULL_VALUE_PLACEHOLDERS:
+        return None
 
     return text
