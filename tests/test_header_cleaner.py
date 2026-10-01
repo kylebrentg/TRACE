@@ -1,5 +1,3 @@
-import pytest
-
 from utils.cleaning.header_cleaner import (
     instant_header_matching,
     manual_header_matching_step,

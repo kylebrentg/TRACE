@@ -4,7 +4,7 @@ import sys
 import pytest
 
 from project import load_csv_file
-from utils.loading.loader import does_csv_file_exists, initialize_argparse_engine
+from utils.loading.init_argparse import does_csv_file_exists, initialize_argparse_engine
 
 # --- initialize_argparse_engine ---
 

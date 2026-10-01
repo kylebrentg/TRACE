@@ -9,11 +9,11 @@ from utils.cleaning.header_cleaner import (
 from utils.constants import CSVStandard
 from utils.helper.data_viewer import view_records
 from utils.helper.program_tools import exit_now
-from utils.loading.loader import (
+from utils.loading.init_argparse import (
     does_csv_file_exists,
     initialize_argparse_engine,
-    load_pickle_file,
 )
+from utils.loading.pickle import load_pickle_file, save_record_to_pickle
 from utils.types import ListOfRecords
 
 
@@ -41,7 +41,13 @@ def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
 def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     raw_records_headers_cleaned = clean_headers(raw_records)
 
-    view_records(raw_records_headers_cleaned)
+    pkl_file_path = save_record_to_pickle(
+        "data/interim/2025_crime_records.pkl", raw_records_headers_cleaned
+    )
+
+    view_records(load_pickle_file(pkl_file_path), "This is a PKL File Records:")
+
+    
 
 
 def func_3(): ...
