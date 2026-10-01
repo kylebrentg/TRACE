@@ -11,6 +11,7 @@ def general_string_values_cleaning(column_raw_values: list[str]) -> list[str]:
     for raw_value in column_raw_values:
         cleaned_value = clean_invisible_characters(raw_value)
         cleaned_value = standardize_punctuation(cleaned_value)
+        cleaned_value = tidy_spacing(cleaned_value)
 
         cleaned_values.append(cleaned_value)
 
@@ -51,5 +52,18 @@ def standardize_punctuation(text: str) -> str:
     # Step 3: Turn long dashes (em-dash, en-dash, minus signs) into standard hyphens.
     # (Example: Word's auto-formatted 'cost — benefit' becomes 'cost - benefit').
     text = re.sub(r"[–—−֊־᐀‐‑‒–—―]", "-", text)
+
+    return text
+
+
+# General Cleaning 3
+def tidy_spacing(text: str) -> str:
+    # Step 1: Collapse repeated spaces between words down to exactly one single space.
+    # (Example: 'Hello      world' becomes 'Hello world'. The regex \s+ catches any run of spaces).
+    text = re.sub(r"\s+", " ", text)
+
+    # Step 2: Remove spaces from the very beginning and very end of the entire string.
+    # (Example: ' Hello world ' becomes 'Hello world').
+    text = text.strip()
 
     return text
