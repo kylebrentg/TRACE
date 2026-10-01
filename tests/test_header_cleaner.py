@@ -115,18 +115,17 @@ def test_instant_matches_all_official_headers_when_all_present():
         {
             "offense_type": "Crimes Against Property",
             "offense_name": "Qualified trespass to dwelling",
-            "modus_operandi": "Force, threat, and intimidation",
             "date_committed": "2022-04-23",
             "time_committed": "19:36:00",
             "barangay": "ANUNAS",
+            "type_of_place": "Residential (house/condo)",
             "latitude": "15.150541",
             "longitude": "120.575012",
-            "police_station_number": "Police Station 2",
             "case_status": "Solved",
         }
     ]
     result = instant_header_matching(records)
-    assert len(result) == 10
+    assert len(result) == 9
 
 
 # --- rapidfuzz_header_matching ---
@@ -294,13 +293,12 @@ def test_manual_step_prompts_for_unmatched_official_headers(monkeypatch):
         for header in (
             "offense_type",
             "offense_name",
-            "modus_operandi",
             "date_committed",
             "time_committed",
             "barangay",
+            "type_of_place",
             "latitude",
             "longitude",
-            "police_station_number",
         )
     ]
     # Only "case_status" is unmatched, and "casestatus" is the only raw header left

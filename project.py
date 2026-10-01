@@ -18,15 +18,9 @@ from utils.types import ListOfRecords
 
 
 def main():
-    # Commenting this out for the time being for feature addition purposes. No need to go over the very raw csv file again and again
-    # args = initialize_argparse_engine()
-    # raw_records = load_csv_file(args)
-    # cleaned_records = clean_csv_file(raw_records)
-
-    pickle_file_path = "data/interim/raw_records_headers_cleaned.pkl"
-    raw_records_headers_cleaned: ListOfRecords = load_pickle_file(pickle_file_path)
-
-    cleaned_records = clean_csv_file(raw_records_headers_cleaned)
+    args = initialize_argparse_engine()
+    raw_records = load_csv_file(args)
+    cleaned_records = clean_csv_file(raw_records)
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -45,13 +39,9 @@ def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
 
 
 def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
-    # raw_records_headers_cleaned = clean_headers(raw_records) # Headers already cleaned. Commenting this out for the time being
+    raw_records_headers_cleaned = clean_headers(raw_records)
 
-    raw_records_headers_cleaned: ListOfRecords = raw_records.copy()
-
-    raw_records_offense_type_column_cleaned = clean_column_offense_type(
-        raw_records_headers_cleaned
-    )
+    view_records(raw_records_headers_cleaned)
 
 
 def func_3(): ...
