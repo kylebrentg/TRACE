@@ -1,5 +1,11 @@
 import argparse
 import os
+import pickle
+
+
+def load_pickle_file(file_path: str) -> list:
+    with open(file_path, "rb") as f:
+        return pickle.load(f)
 
 
 def initialize_argparse_engine() -> argparse.Namespace:
