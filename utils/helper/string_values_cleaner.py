@@ -64,11 +64,7 @@ def convert_fake_nulls(text: str | None) -> str | None:
     if text is None:
         return None
 
-    # Step 2: Skip non-string data types (e.g., numbers, booleans)
-    if not isinstance(text, str):
-        return text
-
-    # Step 3: Strip whitespace and check if lowercased text is a placeholder
+    # Step 2: Strip whitespace and check if lowercased text is a placeholder
     if text.strip().lower() in CSVStandard.NULL_VALUE_PLACEHOLDERS:
         return None
 
