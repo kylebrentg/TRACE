@@ -12,7 +12,7 @@ def view_records(raw_records: ListOfRecords, title: str | None = None) -> None:
         print(f"Table Title: {title}")
     print("-" * 25)
     for index, record in enumerate(raw_records[:5], start=1):
-        print(f"{index}. {record}")
+        print(f"{index}. {record}", "\n")
     if len(raw_records) > 5:
         print(f"...omitting {len(raw_records) - 5}")
     print("-" * 25)

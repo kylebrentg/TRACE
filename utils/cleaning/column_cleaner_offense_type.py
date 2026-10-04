@@ -1,3 +1,5 @@
+from codecs import raw_unicode_escape_decode
+
 from utils.constants import CSVStandard
 from utils.helper.column_values_viewer import view_column_values
 from utils.helper.data_viewer import view_list, view_records
@@ -13,11 +15,15 @@ def clean_column_offense_type(
         record[CSVStandard.OFFENSE_TYPE] for record in raw_records_headers_cleaned
     ]
 
-    view_list(offense_type_raw_values, "Raw Values before General String Cleaning")
-
     values_cleaned = general_string_values_cleaning(offense_type_raw_values)
     values_cleaned = [value.title() for value in values_cleaned]
 
-    view_list(
-        values_cleaned, "New Values after General String Cleaning", representation=True
-    )
+    cleaned_values_for_offense_type: ListOfRecords = [
+        {**record, CSVStandard.OFFENSE_TYPE: value}
+        for record, value in zip(raw_records_headers_cleaned, values_cleaned)
+    ]
+
+    view_records(cleaned_values_for_offense_type)
+    exit_now()
+
+    return cleaned_values_for_offense_type
