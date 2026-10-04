@@ -45,11 +45,14 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Temporary comment. Working on other feature
     # raw_records_headers_cleaned = clean_headers(raw_records)
 
-    raw_records_headers_cleaned = raw_records[:]
+    raw_records_headers_cleaned = raw_records.copy()
 
+    # Column 1 of 9
     offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
-    view_records(offense_type_cleaned, "Offense Type Cleaned")
-    
+
+    # Column 2 of 9
+    offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
+
 
 def func_3(): ...
 
