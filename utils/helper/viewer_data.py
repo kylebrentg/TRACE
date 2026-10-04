@@ -1,0 +1,139 @@
+from tabulate import tabulate
+from utils.types import HeaderMatchingScorer, ListOfRecords
+
+# =============================================================================
+# --- RECORDS & HEADERS VIEWER ---
+# =============================================================================
+
+def view_records(raw_records: ListOfRecords, title: str | None = None, unique: bool = False) -> None:
+    """Prints an optional title and the records."""
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print("-" * 25)
+
+    if unique:
+        displayed_records = []
+        seen = set()
+        for r in raw_records:
+            t = tuple(sorted(r.items()))
+            if t not in seen:
+                seen.add(t)
+                displayed_records.append(r)
+    else:
+        displayed_records = raw_records
+
+    limit = None if unique else 5
+    records_to_show = displayed_records[:limit] if limit else displayed_records
+
+    for index, record in enumerate(records_to_show, start=1):
+        print(f"{index}. {record}", "\n")
+
+    if limit and len(displayed_records) > limit:
+        print(f"...omitting {len(displayed_records) - limit}")
+    print("-" * 25)
+
+
+def view_record_headers(raw_records: ListOfRecords, title: str | None = None) -> None:
+    """Prints an optional title and the headers of the first record."""
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print("-" * 25)
+    for record in raw_records:
+        print(record.keys())
+        break
+    print("-" * 25)
+
+
+# =============================================================================
+# --- COLUMN VALUES & LIST VIEWER ---
+# =============================================================================
+
+def view_column_values(
+    records: ListOfRecords, 
+    column_name: str, 
+    title: str | None = None, 
+    unique: bool = False
+) -> None:
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print(f"Column: {column_name}")
+    print("-" * 25)
+    
+    if unique:
+        # Get unique values preserving order
+        column_values = list(dict.fromkeys(record[column_name] for record in records if column_name in record))
+    else:
+        column_values = [record[column_name] for record in records if column_name in record]
+
+    limit = None if unique else 20
+    values_to_show = column_values[:limit] if limit else column_values
+
+    for index, value in enumerate(values_to_show, start=1):
+        if value in ("", " ", None):
+            print(f"{index}. ''")
+            continue
+        print(f"{index}. {value}")
+
+    if limit and len(column_values) > limit:
+        print(f"...omitting {len(column_values) - limit}")
+    print("-" * 25)
+
+
+def view_list_items(
+    items: list[str],
+    title: str | None = None,
+    representation: bool | None = None,
+    unique: bool = False,
+) -> None:
+    """Prints an optional title and the items in the list.
+
+    Pass ``representation=True`` to display each item's exact Python
+    representation. Pass ``unique=True`` to display each value only once.
+    """
+    if representation not in (None, True):
+        raise ValueError("representation must be None or 'True'")
+
+    displayed_items = list(dict.fromkeys(items)) if unique else items
+
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print("-" * 25)
+    
+    limit = None if unique else 20
+    items_to_show = displayed_items[:limit] if limit else displayed_items
+
+    for index, item in enumerate(items_to_show, start=1):
+        displayed_item = repr(item) if representation == True else item
+        print(f"{index}. {displayed_item}")
+
+    if limit and len(displayed_items) > limit:
+        print(f"...omitting {len(displayed_items) - limit}")
+    print("-" * 25)
+
+
+# =============================================================================
+# --- FUZZY MATCHING RESULTS VIEWER ---
+# =============================================================================
+
+def view_fuzzy_matching_results(
+    results: list[HeaderMatchingScorer], title: str | None = None
+) -> None:
+    """Prints an optional title and the RapidFuzz results table."""
+    table_headers = ["raw_header", "official_header", "rapidfuzz_score"]
+    table_data = []
+
+    for result in sorted(
+        results, key=lambda x: x["rapidfuzz_score"], reverse=True
+    ):
+        table_data.append([str(result[header]) for header in table_headers])
+
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print("-" * 25)
+    print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
+    print("-" * 25)

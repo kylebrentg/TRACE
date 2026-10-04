@@ -1,7 +1,7 @@
 from rapidfuzz import fuzz, process
 
 from utils.constants import CSVStandard
-from utils.helper.data_viewer import view_list, view_rapid_fuzz_results, view_records
+from utils.helper.viewer_data import view_list_items, view_fuzzy_matching_results, view_records
 from utils.helper.program_tools import exit_now
 from utils.helper.user_facing import manual_header_matching
 from utils.types import HeaderMatchingScorer, ListOfRecords

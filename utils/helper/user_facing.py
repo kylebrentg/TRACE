@@ -8,7 +8,7 @@ from utils.helper.program_tools import exit_now
 from utils.types import HeaderMatchingScorer, ListOfRecords
 
 
-def display_raw_headers_remaining(
+def view_unmatched_raw_headers(
     raw_headers_matched: list[str], raw_records: ListOfRecords
 ) -> dict[int, str]:
     """Displays a numbered table of remaining (unmatched) raw headers with sample values.
@@ -90,7 +90,7 @@ def manual_header_matching(
         print("-" * 60)
         print("\nRemaining raw headers:\n")
 
-        position_to_header = display_raw_headers_remaining(
+        position_to_header = view_unmatched_raw_headers(
             raw_headers_matched, raw_records
         )
 

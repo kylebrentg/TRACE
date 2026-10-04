@@ -1,16 +1,12 @@
 import re
 import unicodedata
 
-from spellchecker import SpellChecker
-
 from utils.constants import CSVStandard
-from utils.helper.data_viewer import view_list
+from utils.helper.viewer_data import view_list_items
 from utils.helper.program_tools import exit_now
 
-# Instantiate once at module level to avoid repeated disk I/O on every call.
-_spell = SpellChecker()
-
 # --- General String Values Cleaning ---
+
 
 def general_string_values_cleaning(column_raw_values: list[str]) -> list[str]:
     cleaned_values = []

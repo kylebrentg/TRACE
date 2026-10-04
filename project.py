@@ -2,12 +2,13 @@ import argparse
 import csv
 import pickle
 
+from utils.cleaning.column_cleaner_offense_name import clean_column_offense_name
 from utils.cleaning.column_cleaner_offense_type import clean_column_offense_type
 from utils.cleaning.header_cleaner import (
     clean_headers,
 )
 from utils.constants import CSVStandard
-from utils.helper.data_viewer import view_records
+from utils.helper.viewer_data import view_records
 from utils.helper.program_tools import exit_now
 from utils.loading.init_argparse import (
     does_csv_file_exists,
