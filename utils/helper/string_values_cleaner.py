@@ -1,10 +1,16 @@
 import re
 import unicodedata
 
+from spellchecker import SpellChecker
+
 from utils.constants import CSVStandard
 from utils.helper.data_viewer import view_list
 from utils.helper.program_tools import exit_now
 
+# Instantiate once at module level to avoid repeated disk I/O on every call.
+_spell = SpellChecker()
+
+# --- General String Values Cleaning ---
 
 def general_string_values_cleaning(column_raw_values: list[str]) -> list[str]:
     cleaned_values = []
@@ -13,6 +19,7 @@ def general_string_values_cleaning(column_raw_values: list[str]) -> list[str]:
         cleaned_value = clean_invisible_characters(raw_value)
         cleaned_value = standardize_punctuation(cleaned_value)
         cleaned_value = tidy_spacing(cleaned_value)
+        cleaned_value = fix_fragmented_words(cleaned_value)
         cleaned_value = convert_fake_nulls(cleaned_value)
 
         cleaned_values.append(cleaned_value)
@@ -59,6 +66,53 @@ def tidy_spacing(text: str) -> str:
 
 
 # General Cleaning 4
+def fix_fragmented_words(text: str) -> str:
+    """Rejoin words that were incorrectly split mid-word.
+
+    Walks adjacent token pairs and merges them when:
+      - The left token (letters only) is NOT a known dictionary word, AND
+      - Concatenating the two tokens' letters IS a known dictionary word.
+
+    Examples:
+        "COMPREHENSI VE"   -> "COMPREHENSIVE"
+        "MALVERSATIO N."   -> "MALVERSATION."
+        "LASCIVIOUSNE SS"  -> "LASCIVIOUSNESS"
+    """
+    tokens = text.split()
+    if len(tokens) <= 1:
+        return text
+
+    result: list[str] = []
+    i = 0
+    while i < len(tokens):
+        if i + 1 < len(tokens):
+            left = tokens[i]
+            right = tokens[i + 1]
+
+            # Extract only the alphabetic characters from each token.
+            left_alpha = re.sub(r"[^a-zA-Z]", "", left)
+            right_alpha = re.sub(r"[^a-zA-Z]", "", right)
+
+            if left_alpha and right_alpha:
+                joined_alpha = left_alpha + right_alpha
+                left_is_known = bool(_spell.known([left_alpha.lower()]))
+                joined_is_known = bool(_spell.known([joined_alpha.lower()]))
+
+                if not left_is_known and joined_is_known:
+                    # Preserve any trailing punctuation from the right token.
+                    # e.g. right="N." -> right_alpha="N", trailing="."
+                    trailing_punct = right[len(right_alpha):]
+                    result.append(left + right_alpha + trailing_punct)
+                    i += 2
+                    continue
+
+        result.append(tokens[i])
+        i += 1
+
+    return " ".join(result)
+
+
+# General Cleaning 5
 def convert_fake_nulls(text: str | None) -> str | None:
     # Step 1: If already None, keep it as None
     if text is None:
