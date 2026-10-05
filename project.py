@@ -8,8 +8,8 @@ from utils.cleaning.header_cleaner import (
     clean_headers,
 )
 from utils.constants import CSVStandard
-from utils.helper.viewer_data import view_records
 from utils.helper.program_tools import exit_now
+from utils.helper.viewer_data import view_records
 from utils.loading.init_argparse import (
     does_csv_file_exists,
     initialize_argparse_engine,

@@ -1,10 +1,9 @@
 from codecs import raw_unicode_escape_decode
 
 from utils.constants import CSVStandard
-from utils.helper.viewer_data import view_column_values
-from utils.helper.viewer_data import view_list_items, view_records
 from utils.helper.program_tools import exit_now
 from utils.helper.string_values_cleaner import general_string_values_cleaning
+from utils.helper.viewer_data import view_column_values, view_list_items, view_records
 from utils.types import ListOfRecords
 
 

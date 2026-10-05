@@ -2,8 +2,8 @@ import re
 import unicodedata
 
 from utils.constants import CSVStandard
-from utils.helper.viewer_data import view_list_items
 from utils.helper.program_tools import exit_now
+from utils.helper.viewer_data import view_list_items
 
 # --- General String Values Cleaning ---
 
