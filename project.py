@@ -9,7 +9,7 @@ from utils.cleaning.header_cleaner import (
 )
 from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
-from utils.helper.viewer_data import view_records
+from utils.helper.viewer_data import view_column_values, view_records
 from utils.loading.init_argparse import (
     does_csv_file_exists,
     initialize_argparse_engine,
@@ -49,9 +49,11 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     # Column 1 of 9
     offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
+    view_column_values(offense_type_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
     # Column 2 of 9
     offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
+    view_column_values(offense_name_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
 
 def func_3(): ...
