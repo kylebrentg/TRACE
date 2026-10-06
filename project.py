@@ -49,11 +49,16 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     # Column 1 of 9
     offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
-    view_column_values(offense_type_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
+    # view_column_values(offense_type_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
     # Column 2 of 9
     offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
-    view_column_values(offense_name_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
+    # view_column_values(offense_name_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
+    pkl_file_path = save_record_to_pickle(
+        "data/interim/2025_crime_records_offense_name_cleaned.pkl", offense_name_cleaned
+    )
+    loaded_records = load_pickle_file(pkl_file_path)
+    view_records(loaded_records, title="offense_name_cleaned", unique=True)
 
 
 def func_3(): ...
