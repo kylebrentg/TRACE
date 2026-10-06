@@ -1,53 +1,13 @@
 import inspect
 
-from google import genai
-from google.genai.errors import APIError
-
-from utils.constants import CSVStandard, GeminiConstants
+from utils.constants import CSVStandard
 from utils.helper.string_values_cleaner import general_string_values_cleaning
-from utils.loading.init_gemini import initialize_gemini_api
-from utils.schemas import OffenseNameCleaningResponse
+from utils.loading.init_gemini import clean_values_with_gemini, initialize_gemini_api
 from utils.types import ListOfRecords
 
 
-def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
-    offense_name_raw_values: list[str] = [
-        record[CSVStandard.OFFENSE_NAME] for record in raw_records_offense_type_cleaned
-    ]
-    unique_values = list(
-        {
-            value.lower()
-            for value in general_string_values_cleaning(offense_name_raw_values)
-        }
-    )
-
-    client = initialize_gemini_api()
-    match_values_data = clean_with_gemini(unique_values, client)
-
-    match_values_mapping = {
-        match_value.original: match_value.cleaned
-        for match_value in match_values_data.items
-    }
-
-    cleaned_values: ListOfRecords = [
-        {
-            **record,
-            CSVStandard.OFFENSE_NAME: match_values_mapping[
-                record[CSVStandard.OFFENSE_NAME].lower()
-            ],
-        }
-        for record in raw_records_offense_type_cleaned
-    ]
-
-    return cleaned_values
-
-
-def clean_with_gemini(
-    values_to_be_cleaned: list[str],
-    client: genai.Client,
-) -> OffenseNameCleaningResponse:
-
-    prompt = inspect.cleandoc(f"""
+def offense_name_cleaning_prompt(values_to_be_cleaned: list[str]) -> str:
+    return inspect.cleandoc(f"""
         You will be given a Python list of raw offense name strings extracted from
         a crime records database. These strings may contain:
 
@@ -85,55 +45,35 @@ def clean_with_gemini(
         {values_to_be_cleaned}
     """)
 
-    models = GeminiConstants.FLASH_LITE_MODELS
-    failure: APIError | ValueError
 
-    for model_index, model_name in enumerate(models):
-        try:
-            interaction = client.interactions.create(
-                model=model_name,
-                system_instruction=(
-                    "You are a Philippine criminal law data cleaning assistant."
-                ),
-                input=prompt,
-                response_format={
-                    "type": "text",
-                    "mime_type": "application/json",
-                    "schema": OffenseNameCleaningResponse.model_json_schema(),
-                },
-                generation_config={
-                    "temperature": GeminiConstants.TEMPERATURE,
-                },
-            )
+def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
+    offense_name_raw_values: list[str] = [
+        record[CSVStandard.OFFENSE_NAME] for record in raw_records_offense_type_cleaned
+    ]
+    unique_values = list(
+        {
+            value.lower()
+            for value in general_string_values_cleaning(offense_name_raw_values)
+        }
+    )
 
-            output_text = interaction.output_text
+    client = initialize_gemini_api()
+    prompt = offense_name_cleaning_prompt(unique_values)
+    match_values_data = clean_values_with_gemini(prompt, client)
 
-            if not isinstance(output_text, str) or not output_text:
-                raise ValueError(
-                    f"The model {model_name} returned an empty response "
-                    "or output was blocked."
-                )
+    match_values_mapping = {
+        match_value.original: match_value.cleaned
+        for match_value in match_values_data.items
+    }
 
-            return OffenseNameCleaningResponse.model_validate_json(output_text)
+    cleaned_values: ListOfRecords = [
+        {
+            **record,
+            CSVStandard.OFFENSE_NAME: match_values_mapping[
+                record[CSVStandard.OFFENSE_NAME].lower()
+            ],
+        }
+        for record in raw_records_offense_type_cleaned
+    ]
 
-        except APIError as error:
-            failure = error
-            error_details = (
-                f"status={error.status!r}, code={error.code}, message={error.message!r}"
-            )
-
-        except ValueError as error:
-            failure = error
-            error_details = f"response validation failed: {error}"
-
-        print(f"Model {model_name} failed: {error_details}")
-
-        if model_index == len(models) - 1:
-            raise RuntimeError(
-                f"All Gemini fallback models failed after trying {len(models)} models."
-            ) from failure
-
-        next_model = models[model_index + 1]
-        print(f"Switching from {model_name} to {next_model}.")
-
-    raise RuntimeError("Gemini model loop exited unexpectedly.")
+    return cleaned_values
