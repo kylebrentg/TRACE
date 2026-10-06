@@ -60,6 +60,11 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     raw_records_offense_name_cleaned = raw_records.copy()
     type_of_place_cleaned = clean_column_type_of_place(raw_records_offense_name_cleaned)
 
+    file_path_save = save_record_to_pickle("data/interim/2025_crime_records_type_of_place_cleaned.pkl", type_of_place_cleaned)
+    data = load_pickle_file(file_path_save)
+    view_records(data, title="type_of_place_cleaned", unique=False)
+    
+
 
 def func_3(): ...
 
