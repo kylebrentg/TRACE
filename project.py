@@ -2,6 +2,7 @@ import argparse
 import csv
 import pickle
 
+from utils.cleaning.column_cleaner_barangay import clean_column_barangay
 from utils.cleaning.column_cleaner_offense_name import clean_column_offense_name
 from utils.cleaning.column_cleaner_offense_type import clean_column_offense_type
 from utils.cleaning.column_cleaner_type_of_place import clean_column_type_of_place
@@ -25,7 +26,7 @@ def main():
     # raw_records = load_csv_file(args)
     # cleaned_records = clean_csv_file(raw_records)
     _ = clean_csv_file(
-        load_pickle_file("data/interim/2025_crime_records_offense_name_cleaned.pkl")
+        load_pickle_file("data/interim/2025_crime_records_type_of_place_cleaned.pkl")
     )
 
 
@@ -48,6 +49,8 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Temporary comment. Working on other feature
     # raw_records_headers_cleaned = clean_headers(raw_records)
 
+    raw_records_type_of_place_cleaned = raw_records.copy()
+
     # Column 1 of 9
     # offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
     # view_column_values(offense_type_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
@@ -57,13 +60,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # view_column_values(offense_name_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
     # Column 3 of 9
-    raw_records_offense_name_cleaned = raw_records.copy()
-    type_of_place_cleaned = clean_column_type_of_place(raw_records_offense_name_cleaned)
+    # type_of_place_cleaned = clean_column_type_of_place(raw_records_offense_name_cleaned)
 
-    file_path_save = save_record_to_pickle("data/interim/2025_crime_records_type_of_place_cleaned.pkl", type_of_place_cleaned)
-    data = load_pickle_file(file_path_save)
-    view_records(data, title="type_of_place_cleaned", unique=False)
-    
+    barangay_cleaned = clean_column_barangay(raw_records_type_of_place_cleaned)
 
 
 def func_3(): ...
