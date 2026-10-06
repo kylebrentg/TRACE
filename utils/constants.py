@@ -99,3 +99,37 @@ class CSVStandard:
             "---",
         }
     )
+
+
+class GeminiConstants:
+    # 1. Flagship / Complex reasoning & heavy development
+    PRO_MODELS: ClassVar[frozenset[str]] = frozenset(
+        {
+            "gemini-3.1-pro-preview",
+        }
+    )
+
+    # 2. Ultra-low latency & cost-efficient batch processing
+    FLASH_LITE_MODELS: ClassVar[tuple[str, ...]] = (
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+    )
+
+    # 3. Standard workhorse models (balanced speed, intelligence, & context)
+    FLASH_MODELS: ClassVar[frozenset[str]] = frozenset(
+        {
+            "gemini-3.8-flash",
+            "gemini-3.7-flash",
+            "gemini-3.6-flash",
+            "gemini-3.5-flash",
+            "gemini-3-flash-preview",
+        }
+    )
+
+    # Combined text-only generation bucket
+    TEXT_MODELS_BUCKET: ClassVar[frozenset[str]] = (
+        PRO_MODELS | frozenset(FLASH_LITE_MODELS) | FLASH_MODELS
+    )
+
+    TEMPERATURE: ClassVar[float] = 0.0
+    MAX_RETRIES: ClassVar[int] = 2
