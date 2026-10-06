@@ -23,7 +23,7 @@ def main():
     # args = initialize_argparse_engine()
     # raw_records = load_csv_file(args)
     # cleaned_records = clean_csv_file(raw_records)
-    _ = clean_csv_file(load_pickle_file("data/interim/2025_crime_records.pkl"))
+    _ = clean_csv_file(load_pickle_file("data/interim/2025_crime_records_offense_name_cleaned.pkl"))
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -45,20 +45,21 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Temporary comment. Working on other feature
     # raw_records_headers_cleaned = clean_headers(raw_records)
 
-    raw_records_headers_cleaned = raw_records.copy()
 
     # Column 1 of 9
-    offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
+    # offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
     # view_column_values(offense_type_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
     # Column 2 of 9
-    offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
+    # offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
     # view_column_values(offense_name_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
-    pkl_file_path = save_record_to_pickle(
-        "data/interim/2025_crime_records_offense_name_cleaned.pkl", offense_name_cleaned
-    )
-    loaded_records = load_pickle_file(pkl_file_path)
-    view_records(loaded_records, title="offense_name_cleaned", unique=True)
+    
+    # Column 3 of 9
+    raw_records_offense_name_cleaned = raw_records.copy()
+    view_records(raw_records_offense_name_cleaned)
+    # clean_column_type_of_place()
+
+    
 
 
 def func_3(): ...
