@@ -1,5 +1,5 @@
 from tabulate import tabulate
-from utils.types import HeaderMatchingScorer, ListOfRecords
+from utils.types import BarangayMatchingScorer, HeaderMatchingScorer, ListOfRecords
 
 # =============================================================================
 # --- RECORDS & HEADERS VIEWER ---
@@ -119,15 +119,28 @@ def view_list_items(
 # --- FUZZY MATCHING RESULTS VIEWER ---
 # =============================================================================
 
-def view_fuzzy_matching_results(
-    results: list[HeaderMatchingScorer], title: str | None = None
+def view_fuzzy_header_matching_results(
+    results: list[HeaderMatchingScorer],
+    title: str | None = None,
+    unique: bool = False,
 ) -> None:
-    """Prints an optional title and the RapidFuzz results table."""
+    """Prints an optional title and the RapidFuzz header matching results table."""
     table_headers = ["raw_header", "official_header", "rapidfuzz_score"]
     table_data = []
 
+    if unique:
+        seen = set()
+        displayed_results = []
+        for r in results:
+            key = (r["raw_header"], r["official_header"], r["rapidfuzz_score"])
+            if key not in seen:
+                seen.add(key)
+                displayed_results.append(r)
+    else:
+        displayed_results = results
+
     for result in sorted(
-        results, key=lambda x: x["rapidfuzz_score"], reverse=True
+        displayed_results, key=lambda x: x["rapidfuzz_score"], reverse=True
     ):
         table_data.append([str(result[header]) for header in table_headers])
 
@@ -137,3 +150,42 @@ def view_fuzzy_matching_results(
     print("-" * 25)
     print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
     print("-" * 25)
+
+
+def view_fuzzy_barangay_matching_results(
+    results: list[BarangayMatchingScorer],
+    title: str | None = None,
+    unique: bool = False,
+) -> None:
+    """Prints an optional title and the RapidFuzz barangay matching results table."""
+    table_headers = ["raw_barangay", "official_barangay", "rapidfuzz_score"]
+    table_data = []
+
+    if unique:
+        seen = set()
+        displayed_results = []
+        for r in results:
+            key = (r["raw_barangay"], r["official_barangay"], r["rapidfuzz_score"])
+            if key not in seen:
+                seen.add(key)
+                displayed_results.append(r)
+    else:
+        displayed_results = results
+
+    for result in sorted(
+        displayed_results, key=lambda x: x["rapidfuzz_score"], reverse=True
+    ):
+        table_data.append([str(result[header]) for header in table_headers])
+
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print("-" * 25)
+    print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
+    print("-" * 25)
+
+
+# Backward compatibility and alternative naming aliases
+view_fuzzy_matching_results = view_fuzzy_header_matching_results
+view_header_fuzzy_matching_results = view_fuzzy_header_matching_results
+view_barangay_fuzzy_matching_results = view_fuzzy_barangay_matching_results
