@@ -1,4 +1,4 @@
-from rapidfuzz import fuzz, process
+from rapidfuzz import fuzz, process, utils
 
 from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
@@ -18,10 +18,7 @@ def clean_column_barangay(
     official_barangay_values = list(CSVStandard.BARANGAY_NAMES)
 
     raw_barangay_values: list[str] = list(
-        {
-            record[CSVStandard.BARANGAY].title()
-            for record in raw_records_type_of_place_cleaned
-        }
+        {record[CSVStandard.BARANGAY] for record in raw_records_type_of_place_cleaned}
     )
 
     match_values = rapidfuzz_barangay_matching(
@@ -34,11 +31,15 @@ def clean_column_barangay(
 def rapidfuzz_barangay_matching(
     raw_barangay_values: list[str], official_barangay_values: list[str]
 ):
+    # raw_barangay_values = [
+    #     barangay_value.title() for barangay_value in raw_barangay_values
+    # ]
+
     rapidfuzz_results: list[BarangayMatchingScorer] = []
 
     for raw_barangay in raw_barangay_values:
         result_rapidfuzz = process.extractOne(
-            raw_barangay, official_barangay_values, scorer=fuzz.WRatio
+            raw_barangay, official_barangay_values, scorer=fuzz.WRatio, processor=utils.default_process
         )
 
         matching_official_barangay, score, _ = result_rapidfuzz
@@ -51,6 +52,6 @@ def rapidfuzz_barangay_matching(
             }
         )
 
-    # view_fuzzy_barangay_matching_results(
-    #     rapidfuzz_results, "Barangay Matching RapidFuzz Result"
-    # )
+    view_fuzzy_barangay_matching_results(
+        rapidfuzz_results, "Barangay Matching RapidFuzz Result"
+    )
