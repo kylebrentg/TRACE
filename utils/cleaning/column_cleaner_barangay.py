@@ -4,6 +4,7 @@ from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
 from utils.helper.string_values_cleaner import general_string_values_cleaning
 from utils.helper.viewer_data import (
+    view_column_values,
     view_fuzzy_barangay_matching_results,
     view_list_items,
     view_records,
@@ -21,25 +22,59 @@ def clean_column_barangay(
         {record[CSVStandard.BARANGAY] for record in raw_records_type_of_place_cleaned}
     )
 
-    match_values = rapidfuzz_barangay_matching(
+    rapidfuzz_results = rapidfuzz_barangay_matching(
         raw_barangay_values, official_barangay_values
     )
+
+    updated_records = match_high_rapidfuzz_result(
+        rapidfuzz_results, raw_records_type_of_place_cleaned
+    )
+
+    # view_records(updated_records, "Sample Matched Barangay Values so far...")
+    # view_column_values(
+    #     updated_records,
+    #     CSVStandard.BARANGAY,
+    #     "List 1: Updated Barangay Values",
+    #     unique=True,
+    # )
+    # view_column_values(
+    #     raw_records_type_of_place_cleaned, CSVStandard.BARANGAY, "List 2: Raw/Original Barangay Values" ,unique=True
+    # )
 
     # return cleaned_values
 
 
+def match_high_rapidfuzz_result(
+    rapidfuzz_results: list[BarangayMatchingScorer], raw_records: ListOfRecords
+) -> ListOfRecords:
+    updated_records: ListOfRecords = []
+
+    for record in raw_records:
+        for result in rapidfuzz_results:
+            if record[CSVStandard.BARANGAY] != result["raw_barangay"]:
+                continue
+
+            if not result["rapidfuzz_score"] >= 90:
+                continue
+
+            updated_records.append(
+                {**record, CSVStandard.BARANGAY: result["official_barangay"]}
+            )
+    return updated_records
+
+
 def rapidfuzz_barangay_matching(
     raw_barangay_values: list[str], official_barangay_values: list[str]
-):
-    # raw_barangay_values = [
-    #     barangay_value.title() for barangay_value in raw_barangay_values
-    # ]
+) -> list[BarangayMatchingScorer]:
 
     rapidfuzz_results: list[BarangayMatchingScorer] = []
 
     for raw_barangay in raw_barangay_values:
         result_rapidfuzz = process.extractOne(
-            raw_barangay, official_barangay_values, scorer=fuzz.WRatio, processor=utils.default_process
+            raw_barangay,
+            official_barangay_values,
+            scorer=fuzz.WRatio,
+            processor=utils.default_process,
         )
 
         matching_official_barangay, score, _ = result_rapidfuzz
@@ -51,7 +86,4 @@ def rapidfuzz_barangay_matching(
                 "rapidfuzz_score": round(score, 2),
             }
         )
-
-    view_fuzzy_barangay_matching_results(
-        rapidfuzz_results, "Barangay Matching RapidFuzz Result"
-    )
+    return rapidfuzz_results
