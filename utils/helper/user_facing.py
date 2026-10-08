@@ -4,8 +4,86 @@ from typing import Any
 
 from tabulate import tabulate
 
+from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
-from utils.types import HeaderMatchingScorer, ListOfRecords
+from utils.helper.viewer_data import view_records
+from utils.types import BarangayMatchingScorer, HeaderMatchingScorer, ListOfRecords
+
+# --- Barangay Matching ---
+
+
+def manual_barangay_matching(
+    updated_records: ListOfRecords, rapidfuzz_results: list[BarangayMatchingScorer]
+) -> ListOfRecords:
+
+    matched_barangays: ListOfRecords = []
+
+    print("Manual barangay matching is required...")
+    print("Remaining barangays:")
+
+    remaining_rapidfuzz_results = sorted(
+        [{**result} for result in rapidfuzz_results if result["rapidfuzz_score"] < 90],
+        key=lambda x: x["rapidfuzz_score"],
+        reverse=True,
+    )
+
+    # raw barangay -> manually chosen official barangay
+    manual_matches: dict[str, str] = {}
+
+    remaining_rapidfuzz_results_copy = remaining_rapidfuzz_results.copy()
+    for result in remaining_rapidfuzz_results:
+        display_remaining_barangay(remaining_rapidfuzz_results_copy)
+        while True:
+            user_input = int(
+                input(
+                    f"Choose official barangay number to match '{result['raw_barangay']}' (suggestion: {result['official_barangay']}, {result['rapidfuzz_score']}%): "
+                )
+            )
+            if user_input not in range(1, len(remaining_rapidfuzz_results_copy) + 1):
+                print(
+                    "Invalid input. Please choose a number between 1 and",
+                    len(remaining_rapidfuzz_results_copy),
+                )
+                continue
+
+            chosen_result = remaining_rapidfuzz_results_copy[user_input - 1]
+            manual_matches[result["raw_barangay"]] = chosen_result["official_barangay"]
+            remaining_rapidfuzz_results_copy.remove(chosen_result)
+            break
+
+    for record in updated_records:
+        raw_barangay = record[CSVStandard.BARANGAY]
+        matched_barangays.append(
+            {
+                **record,
+                CSVStandard.BARANGAY: manual_matches.get(raw_barangay, raw_barangay),
+            }
+        )
+
+    return matched_barangays
+
+
+def display_remaining_barangay(rapidfuzz_results):
+    table_headers = ["No.", "Raw Header", "Official Header", "RapidFuzz Score"]
+    table_data = []
+    counter = 1
+    for result in sorted(
+        rapidfuzz_results, key=lambda x: x["rapidfuzz_score"], reverse=True
+    ):
+        table_data.append(
+            (
+                counter,
+                result["raw_barangay"],
+                result["official_barangay"],
+                result["rapidfuzz_score"],
+            )
+        )
+        counter += 1
+
+    print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
+
+
+# --- Header Matching ---
 
 
 def view_unmatched_raw_headers(
@@ -115,9 +193,13 @@ def manual_header_matching(
             chosen_raw_header = position_to_header[int(choice)]
 
             # --- confirm ---
-            confirm = input(
-                f"\nMatch '{chosen_raw_header}' → '{official_header}'? (yes/no): "
-            ).strip().lower()
+            confirm = (
+                input(
+                    f"\nMatch '{chosen_raw_header}' → '{official_header}'? (yes/no): "
+                )
+                .strip()
+                .lower()
+            )
 
             if confirm in ("yes", "y"):
                 manual_matches.append(

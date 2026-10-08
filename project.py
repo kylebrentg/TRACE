@@ -64,6 +64,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     barangay_cleaned = clean_column_barangay(raw_records_type_of_place_cleaned)
 
+    view_column_values(barangay_cleaned, CSVStandard.BARANGAY, unique=True)
+    view_records(barangay_cleaned, "Barangay Cleaned")
+
 
 def func_3(): ...
 

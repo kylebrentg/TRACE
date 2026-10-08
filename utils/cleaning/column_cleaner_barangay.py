@@ -3,6 +3,7 @@ from rapidfuzz import fuzz, process, utils
 from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
 from utils.helper.string_values_cleaner import general_string_values_cleaning
+from utils.helper.user_facing import manual_barangay_matching
 from utils.helper.viewer_data import (
     view_column_values,
     view_fuzzy_barangay_matching_results,
@@ -30,18 +31,9 @@ def clean_column_barangay(
         rapidfuzz_results, raw_records_type_of_place_cleaned
     )
 
-    # view_records(updated_records, "Sample Matched Barangay Values so far...")
-    # view_column_values(
-    #     updated_records,
-    #     CSVStandard.BARANGAY,
-    #     "List 1: Updated Barangay Values",
-    #     unique=True,
-    # )
-    # view_column_values(
-    #     raw_records_type_of_place_cleaned, CSVStandard.BARANGAY, "List 2: Raw/Original Barangay Values" ,unique=True
-    # )
+    cleaned_values = manual_barangay_matching(updated_records, rapidfuzz_results)
 
-    # return cleaned_values
+    return cleaned_values
 
 
 def match_high_rapidfuzz_result(
@@ -54,12 +46,13 @@ def match_high_rapidfuzz_result(
             if record[CSVStandard.BARANGAY] != result["raw_barangay"]:
                 continue
 
-            if not result["rapidfuzz_score"] >= 90:
-                continue
+            if result["rapidfuzz_score"] >= 90:
+                record = {**record, CSVStandard.BARANGAY: result["official_barangay"]}
 
-            updated_records.append(
-                {**record, CSVStandard.BARANGAY: result["official_barangay"]}
-            )
+            break
+
+        updated_records.append(record)
+
     return updated_records
 
 
