@@ -11,3 +11,8 @@ class BarangayMatchingScorer(TypedDict):
     raw_barangay: str
     official_barangay: str
     rapidfuzz_score: float
+
+class CaseStatusMatchingScorer(TypedDict):
+    raw_case_status: str
+    official_case_status: str
+    rapidfuzz_score: float

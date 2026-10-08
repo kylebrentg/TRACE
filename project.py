@@ -3,6 +3,7 @@ import csv
 import pickle
 
 from utils.cleaning.column_cleaner_barangay import clean_column_barangay
+from utils.cleaning.column_cleaner_case_status import clean_column_case_status
 from utils.cleaning.column_cleaner_offense_name import clean_column_offense_name
 from utils.cleaning.column_cleaner_offense_type import clean_column_offense_type
 from utils.cleaning.column_cleaner_type_of_place import clean_column_type_of_place
@@ -65,9 +66,10 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Column 4 of 9
     # barangay_cleaned = clean_column_barangay(raw_records_type_of_place_cleaned)
 
+    case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
 
-    view_column_values(raw_records_barangay_cleaned, CSVStandard.BARANGAY, unique=True)
-    view_records(raw_records_barangay_cleaned, "Barangay Cleaned")
+    # view_column_values(raw_records_barangay_cleaned, CSVStandard.BARANGAY, unique=True)
+    # view_records(raw_records_barangay_cleaned, "Barangay Cleaned")
 
 
 def func_3(): ...

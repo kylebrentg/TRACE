@@ -1,11 +1,20 @@
 from tabulate import tabulate
-from utils.types import BarangayMatchingScorer, HeaderMatchingScorer, ListOfRecords
+
+from utils.types import (
+    BarangayMatchingScorer,
+    CaseStatusMatchingScorer,
+    HeaderMatchingScorer,
+    ListOfRecords,
+)
 
 # =============================================================================
 # --- RECORDS & HEADERS VIEWER ---
 # =============================================================================
 
-def view_records(raw_records: ListOfRecords, title: str | None = None, unique: bool = False) -> None:
+
+def view_records(
+    raw_records: ListOfRecords, title: str | None = None, unique: bool = False
+) -> None:
     """Prints an optional title and the records."""
     print("=" * 50)
     if title is not None:
@@ -50,23 +59,30 @@ def view_record_headers(raw_records: ListOfRecords, title: str | None = None) ->
 # --- COLUMN VALUES & LIST VIEWER ---
 # =============================================================================
 
+
 def view_column_values(
-    records: ListOfRecords, 
-    column_name: str, 
-    title: str | None = None, 
-    unique: bool = False
+    records: ListOfRecords,
+    column_name: str,
+    title: str | None = None,
+    unique: bool = False,
 ) -> None:
     print("=" * 50)
     if title is not None:
         print(f"Table Title: {title}")
     print(f"Column: {column_name}")
     print("-" * 25)
-    
+
     if unique:
         # Get unique values preserving order
-        column_values = list(dict.fromkeys(record[column_name] for record in records if column_name in record))
+        column_values = list(
+            dict.fromkeys(
+                record[column_name] for record in records if column_name in record
+            )
+        )
     else:
-        column_values = [record[column_name] for record in records if column_name in record]
+        column_values = [
+            record[column_name] for record in records if column_name in record
+        ]
 
     limit = None if unique else 20
     values_to_show = column_values[:limit] if limit else column_values
@@ -102,7 +118,7 @@ def view_list_items(
     if title is not None:
         print(f"Table Title: {title}")
     print("-" * 25)
-    
+
     limit = None if unique else 20
     items_to_show = displayed_items[:limit] if limit else displayed_items
 
@@ -118,6 +134,7 @@ def view_list_items(
 # =============================================================================
 # --- FUZZY MATCHING RESULTS VIEWER ---
 # =============================================================================
+
 
 def view_fuzzy_header_matching_results(
     results: list[HeaderMatchingScorer],
@@ -185,7 +202,45 @@ def view_fuzzy_barangay_matching_results(
     print("-" * 25)
 
 
+def view_fuzzy_case_status_matching_results(
+    results: list[CaseStatusMatchingScorer],
+    title: str | None = None,
+    unique: bool = False,
+) -> None:
+    """Prints an optional title and the RapidFuzz case status matching results table."""
+    table_headers = ["raw_case_status", "official_case_status", "rapidfuzz_score"]
+    table_data = []
+
+    if unique:
+        seen = set()
+        displayed_results = []
+        for r in results:
+            key = (
+                r["raw_case_status"],
+                r["official_case_status"],
+                r["rapidfuzz_score"],
+            )
+            if key not in seen:
+                seen.add(key)
+                displayed_results.append(r)
+    else:
+        displayed_results = results
+
+    for result in sorted(
+        displayed_results, key=lambda x: x["rapidfuzz_score"], reverse=True
+    ):
+        table_data.append([str(result[header]) for header in table_headers])
+
+    print("=" * 50)
+    if title is not None:
+        print(f"Table Title: {title}")
+    print("-" * 25)
+    print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
+    print("-" * 25)
+
+
 # Backward compatibility and alternative naming aliases
 view_fuzzy_matching_results = view_fuzzy_header_matching_results
 view_header_fuzzy_matching_results = view_fuzzy_header_matching_results
 view_barangay_fuzzy_matching_results = view_fuzzy_barangay_matching_results
+view_case_status_fuzzy_matching_results = view_fuzzy_case_status_matching_results

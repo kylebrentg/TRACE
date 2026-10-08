@@ -77,6 +77,15 @@ class CSVStandard:
             "Virgen Delos Remedios",
         }
     )
+
+    CASE_CRIME_STATUS: ClassVar[frozenset[str]] = frozenset(
+        {
+            "Solved",
+            "Cleared",
+            "Under Investigation",
+        }
+    )
+
     NULL_VALUE_PLACEHOLDERS: ClassVar[frozenset[str]] = frozenset(
         {
             "",
