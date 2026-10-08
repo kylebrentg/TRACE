@@ -66,10 +66,16 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Column 4 of 9
     # barangay_cleaned = clean_column_barangay(raw_records_type_of_place_cleaned)
 
+    # TODO: SAVE TO PKL FILE
+
+    # Column 5 of 9
     case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
 
-    view_column_values(case_status_cleaned, CSVStandard.CASE_STATUS, unique=True)
-    view_records(case_status_cleaned, "Case Status Cleaned")
+    file_path = save_record_to_pickle("data/interim/2025_crime_records_case_status_cleaned.pkl", case_status_cleaned)
+    raw_records_case_status_cleaned = load_pickle_file(file_path)
+
+    view_column_values(raw_records_case_status_cleaned, CSVStandard.CASE_STATUS, unique=True)
+    view_records(raw_records_case_status_cleaned, "Case Status Cleaned")
 
 
 def func_3(): ...
