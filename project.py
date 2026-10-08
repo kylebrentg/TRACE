@@ -68,8 +68,8 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
 
-    # view_column_values(raw_records_barangay_cleaned, CSVStandard.BARANGAY, unique=True)
-    # view_records(raw_records_barangay_cleaned, "Barangay Cleaned")
+    view_column_values(case_status_cleaned, CSVStandard.CASE_STATUS, unique=True)
+    view_records(case_status_cleaned, "Case Status Cleaned")
 
 
 def func_3(): ...

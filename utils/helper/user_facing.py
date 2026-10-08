@@ -7,7 +7,12 @@ from tabulate import tabulate
 from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
 from utils.helper.viewer_data import view_records
-from utils.types import BarangayMatchingScorer, HeaderMatchingScorer, ListOfRecords
+from utils.types import (
+    BarangayMatchingScorer,
+    CaseStatusMatchingScorer,
+    HeaderMatchingScorer,
+    ListOfRecords,
+)
 
 # --- Barangay Matching ---
 
@@ -75,6 +80,85 @@ def display_remaining_barangay(rapidfuzz_results):
                 counter,
                 result["raw_barangay"],
                 result["official_barangay"],
+                result["rapidfuzz_score"],
+            )
+        )
+        counter += 1
+
+    print(tabulate(table_data, headers=table_headers, tablefmt="grid"))
+
+
+# --- Case Status Matching ---
+
+
+def manual_case_status_matching(
+    updated_records: ListOfRecords, rapidfuzz_results: list[CaseStatusMatchingScorer]
+) -> ListOfRecords:
+
+    matched_case_statuses: ListOfRecords = []
+
+    remaining_rapidfuzz_results = sorted(
+        [{**result} for result in rapidfuzz_results if result["rapidfuzz_score"] < 90],
+        key=lambda x: x["rapidfuzz_score"],
+        reverse=True,
+    )
+
+    if not remaining_rapidfuzz_results:
+        return updated_records
+
+    print("Manual case_status matching is required...")
+    print("Remaining case_status:")
+
+    # raw case_status -> manually chosen official case_status
+    manual_matches: dict[str, str] = {}
+
+    remaining_rapidfuzz_results_copy = remaining_rapidfuzz_results.copy()
+    for result in remaining_rapidfuzz_results:
+        display_remaining_case_status(remaining_rapidfuzz_results_copy)
+        while True:
+            user_input = int(
+                input(
+                    f"Choose official case_status number to match '{result['raw_case_status']}' (suggestion: {result['official_case_status']}, {result['rapidfuzz_score']}%): "
+                )
+            )
+            if user_input not in range(1, len(remaining_rapidfuzz_results_copy) + 1):
+                print(
+                    "Invalid input. Please choose a number between 1 and",
+                    len(remaining_rapidfuzz_results_copy),
+                )
+                continue
+
+            chosen_result = remaining_rapidfuzz_results_copy[user_input - 1]
+            manual_matches[result["raw_case_status"]] = chosen_result["official_case_status"]
+            remaining_rapidfuzz_results_copy.remove(chosen_result)
+            break
+
+    for record in updated_records:
+        raw_case_status = record[CSVStandard.CASE_STATUS]
+        matched_case_statuses.append(
+            {
+                **record,
+                CSVStandard.CASE_STATUS: manual_matches.get(
+                    raw_case_status, raw_case_status
+                ),
+            }
+        )
+
+    return matched_case_statuses
+
+
+def display_remaining_case_status(rapidfuzz_results):
+    table_headers = ["No.", "Raw Header", "Official Header", "RapidFuzz Score"]
+    table_data = []
+    counter = 1
+    for result in sorted(
+        rapidfuzz_results, key=lambda x: x["rapidfuzz_score"], reverse=True
+    ):
+        table_data.append(
+            (
+                counter,
+                result["raw_case_status"],
+                result["official_case_status"],
                 result["rapidfuzz_score"],
             )
         )
