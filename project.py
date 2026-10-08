@@ -4,6 +4,7 @@ import pickle
 
 from utils.cleaning.column_cleaner_barangay import clean_column_barangay
 from utils.cleaning.column_cleaner_case_status import clean_column_case_status
+from utils.cleaning.column_cleaner_lat_lng import clean_column_latitude_longitude
 from utils.cleaning.column_cleaner_offense_name import clean_column_offense_name
 from utils.cleaning.column_cleaner_offense_type import clean_column_offense_type
 from utils.cleaning.column_cleaner_type_of_place import clean_column_type_of_place
@@ -27,7 +28,7 @@ def main():
     # raw_records = load_csv_file(args)
     # cleaned_records = clean_csv_file(raw_records)
     _ = clean_csv_file(
-        load_pickle_file("data/interim/2025_crime_records_barangay_cleaned.pkl")
+        load_pickle_file("data/interim/2025_crime_records_case_status_cleaned.pkl")
     )
 
 
@@ -50,7 +51,7 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Temporary comment. Working on other feature
     # raw_records_headers_cleaned = clean_headers(raw_records)
 
-    raw_records_barangay_cleaned = raw_records.copy()
+    raw_records_case_status_cleaned = raw_records.copy()
 
     # Column 1 of 9
     # offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
@@ -66,16 +67,14 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Column 4 of 9
     # barangay_cleaned = clean_column_barangay(raw_records_type_of_place_cleaned)
 
-    # TODO: SAVE TO PKL FILE
-
     # Column 5 of 9
-    case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
+    # case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
 
-    file_path = save_record_to_pickle("data/interim/2025_crime_records_case_status_cleaned.pkl", case_status_cleaned)
-    raw_records_case_status_cleaned = load_pickle_file(file_path)
+    lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
 
-    view_column_values(raw_records_case_status_cleaned, CSVStandard.CASE_STATUS, unique=True)
-    view_records(raw_records_case_status_cleaned, "Case Status Cleaned")
+
+    # view_column_values(raw_records_case_status_cleaned, CSVStandard.CASE_STATUS, unique=True)
+    # view_records(raw_records_case_status_cleaned, "Case Status Cleaned")
 
 
 def func_3(): ...
