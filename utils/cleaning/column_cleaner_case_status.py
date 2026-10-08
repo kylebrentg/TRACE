@@ -2,7 +2,7 @@ from rapidfuzz import fuzz, process, utils
 
 from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
-from utils.helper.user_facing import ListOfRecords
+from utils.helper.user_facing import ListOfRecords, manual_case_status_matching
 from utils.helper.viewer_data import (
     view_case_status_fuzzy_matching_results,
     view_column_values,
@@ -21,6 +21,34 @@ def clean_column_case_status(raw_records_barangay_cleaned: ListOfRecords):
     rapidfuzz_results = rapidfuzz_case_status_matching(
         raw_case_status_values, official_case_status_values
     )
+
+    updated_records = match_case_status_high_rapidfuzz_result(
+        rapidfuzz_results, raw_records_barangay_cleaned
+    )
+
+    cleaned_values = manual_case_status_matching(updated_records, rapidfuzz_results)
+
+    return cleaned_values
+
+
+def match_case_status_high_rapidfuzz_result(
+    rapidfuzz_results: list[CaseStatusMatchingScorer], raw_records: ListOfRecords
+) -> ListOfRecords:
+    updated_records: ListOfRecords = []
+
+    for record in raw_records:
+        for result in rapidfuzz_results:
+            if record[CSVStandard.CASE_STATUS] != result["raw_case_status"]:
+                continue
+
+            if result["rapidfuzz_score"] >= 90:
+                record = {**record, CSVStandard.CASE_STATUS: result["official_case_status"]}
+
+            break
+
+        updated_records.append(record)
+
+    return updated_records
 
 
 def rapidfuzz_case_status_matching(
@@ -46,6 +74,6 @@ def rapidfuzz_case_status_matching(
             }
         )
 
-    view_case_status_fuzzy_matching_results(rapidfuzz_results)
-    exit_now()
+    # view_case_status_fuzzy_matching_results(rapidfuzz_results)
+    # exit_now()
     return rapidfuzz_results
