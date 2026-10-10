@@ -17,13 +17,35 @@ def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecor
 
     updated_coordinates = _standardize_stringified_float_values(coordinates)
     updated_coordinates = _update_invalid_placeholder_values(updated_coordinates)
-    view_list_items(updated_coordinates, representation=True)
     updated_coordinates = _update_types_from_string_to_float(updated_coordinates)
-    view_list_items(updated_coordinates, representation=True)
+    updated_coordinates = _standardize_coordinate_to_6_decimal_places(
+        updated_coordinates
+    )
 
-    # updated_coordinates = _standardize_coordinate_to_6_decimal_places(updated_coordinates)
+    
     # swap_incorrect_coordinate_order()
     # enforce_angeles_city_bounding_box()
+
+
+def _standardize_coordinate_to_6_decimal_places(
+    coordinates: _ListOfCoordinates,
+) -> _ListOfCoordinates:
+    updated_records: _ListOfCoordinates = []
+
+    for coordinate in coordinates:
+        lat, lng = coordinate
+        if __check_none_value(lat, lng):
+            updated_records.append((lat, lng))
+            continue
+
+        if isinstance(lat, float) and isinstance(lng, float):
+            updated_records.append(
+                (
+                    round(lat, 6),
+                    round(lng, 6),
+                )
+            )
+    return updated_records
 
 
 def _update_types_from_string_to_float(
@@ -38,9 +60,6 @@ def _update_types_from_string_to_float(
         updated_records.append((float(lat), float(lng)))
 
     return updated_records
-
-
-# def _standardize_coordinate_to_6_decimal_places(updated_coordinates: _ListOfCoordinates):
 
 
 def _update_invalid_placeholder_values(
@@ -69,3 +88,8 @@ def _standardize_stringified_float_values(
             updated_records.append((lat.strip().lower(), lng.strip().lower()))
 
     return updated_records
+
+
+# --- Helper Functions ---
+def __check_none_value(lat, lng) -> bool:
+    return lat == "None" or lng == "None"
