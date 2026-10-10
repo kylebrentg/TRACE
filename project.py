@@ -72,7 +72,6 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
 
-
     # view_column_values(raw_records_case_status_cleaned, CSVStandard.CASE_STATUS, unique=True)
     # view_records(raw_records_case_status_cleaned, "Case Status Cleaned")
 
