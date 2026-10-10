@@ -1,3 +1,5 @@
+from typing import Any
+
 from tabulate import tabulate
 
 from utils.types import (
@@ -99,7 +101,7 @@ def view_column_values(
 
 
 def view_list_items(
-    items: list[str],
+    items: list[Any],
     title: str | None = None,
     representation: bool | None = None,
     unique: bool = False,
