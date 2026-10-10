@@ -3,7 +3,7 @@ from utils.helper.program_tools import exit_now
 from utils.helper.viewer_data import view_column_values, view_list_items
 from utils.types import ListOfRecords
 
-_ListOfCoordinates = list[tuple[str, str]]
+_ListOfCoordinates = list[tuple[str | float, str | float]]
 
 
 def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecords):
@@ -17,10 +17,30 @@ def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecor
 
     updated_coordinates = _standardize_stringified_float_values(coordinates)
     updated_coordinates = _update_invalid_placeholder_values(updated_coordinates)
+    view_list_items(updated_coordinates, representation=True)
+    updated_coordinates = _update_types_from_string_to_float(updated_coordinates)
+    view_list_items(updated_coordinates, representation=True)
 
-    # standardize_floats_to_6_decimal_places()
+    # updated_coordinates = _standardize_coordinate_to_6_decimal_places(updated_coordinates)
     # swap_incorrect_coordinate_order()
     # enforce_angeles_city_bounding_box()
+
+
+def _update_types_from_string_to_float(
+    coordinates: _ListOfCoordinates,
+) -> _ListOfCoordinates:
+    updated_records: _ListOfCoordinates = []
+    for coordinate in coordinates:
+        lat, lng = coordinate
+        if lat == "None" or lng == "None":
+            updated_records.append((lat, lng))
+            continue
+        updated_records.append((float(lat), float(lng)))
+
+    return updated_records
+
+
+# def _standardize_coordinate_to_6_decimal_places(updated_coordinates: _ListOfCoordinates):
 
 
 def _update_invalid_placeholder_values(
@@ -42,7 +62,10 @@ def _update_invalid_placeholder_values(
 def _standardize_stringified_float_values(
     coordinates: _ListOfCoordinates,
 ) -> _ListOfCoordinates:
-    return [
-        (coordinate[0].strip().lower(), coordinate[1].strip().lower())
-        for coordinate in coordinates
-    ]
+    updated_records = []
+    for coordinate in coordinates:
+        lat, lng = coordinate
+        if isinstance(lat, str) and isinstance(lng, str):
+            updated_records.append((lat.strip().lower(), lng.strip().lower()))
+
+    return updated_records
