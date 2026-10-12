@@ -27,7 +27,7 @@ def main():
     # args = initialize_argparse_engine()
     # raw_records = load_csv_file(args)
     # cleaned_records = clean_csv_file(raw_records)
-    pkl_file_path = "data/interim/2025_crime_records_case_status_cleaned.pkl"
+    pkl_file_path = "data/interim/2025_crime_records_lat_lng_cleaned.pkl"
     _ = clean_csv_file(load_pickle_file(pkl_file_path))
 
 
@@ -69,15 +69,18 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Column 5 of 9
     # case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
 
-    lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
+    # Column 6, 7  of 9 (lat and lng columns targeted)
+    # lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
 
-    pkl_file_path = "data/interim/2025_crime_records_lat_lng_cleaned.pkl"
-    pkl_file_path = save_record_to_pickle(pkl_file_path, lat_lng_cleaned)
-    lat_lng_cleaned = load_pickle_file(pkl_file_path)
+    # Column 8, 9  of 9 (date and time columns targeted)
 
-    view_column_values(lat_lng_cleaned, CSVStandard.LATITUDE, unique=False)
-    view_column_values(lat_lng_cleaned, CSVStandard.LONGITUDE, unique=False)
-    view_records(lat_lng_cleaned, "Lat/Lng Cleaned")
+    view_column_values(
+        raw_records_case_status_cleaned, CSVStandard.LATITUDE, unique=False
+    )
+    view_column_values(
+        raw_records_case_status_cleaned, CSVStandard.LONGITUDE, unique=False
+    )
+    view_records(raw_records_case_status_cleaned, "Lat/Lng Cleaned")
 
 
 def func_3(): ...
