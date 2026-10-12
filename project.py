@@ -76,6 +76,13 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Column 8, 9  of 9 (date and time columns targeted)
     date_time_cleaned = clean_column_date_time(raw_records_lat_lng_cleaned)
 
+    file_path = save_record_to_pickle(
+        "data/interim/2025_crime_records_date_time_cleaned.pkl", date_time_cleaned
+    )
+
+    loaded_records = load_pickle_file(file_path)
+    view_records(loaded_records, "loaded_records")
+
 
 def func_3(): ...
 
