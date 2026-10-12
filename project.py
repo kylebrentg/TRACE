@@ -4,6 +4,7 @@ import pickle
 
 from utils.cleaning.column_cleaner_barangay import clean_column_barangay
 from utils.cleaning.column_cleaner_case_status import clean_column_case_status
+from utils.cleaning.column_cleaner_date_time import clean_column_date_time
 from utils.cleaning.column_cleaner_lat_lng import clean_column_latitude_longitude
 from utils.cleaning.column_cleaner_offense_name import clean_column_offense_name
 from utils.cleaning.column_cleaner_offense_type import clean_column_offense_type
@@ -50,7 +51,7 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # Temporary comment. Working on other feature
     # raw_records_headers_cleaned = clean_headers(raw_records)
 
-    raw_records_case_status_cleaned = raw_records.copy()
+    raw_records_lat_lng_cleaned = raw_records.copy()
 
     # Column 1 of 9
     # offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
@@ -73,14 +74,7 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
 
     # Column 8, 9  of 9 (date and time columns targeted)
-
-    view_column_values(
-        raw_records_case_status_cleaned, CSVStandard.LATITUDE, unique=False
-    )
-    view_column_values(
-        raw_records_case_status_cleaned, CSVStandard.LONGITUDE, unique=False
-    )
-    view_records(raw_records_case_status_cleaned, "Lat/Lng Cleaned")
+    date_time_cleaned = clean_column_date_time(raw_records_lat_lng_cleaned)
 
 
 def func_3(): ...

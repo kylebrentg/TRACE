@@ -1,6 +1,6 @@
 import sys
 
 
-def exit_now() -> None:
+def exit_now(msg="Exiting the program immediately (for debugging purposes)") -> None:
     """Exits the program immediately."""
-    sys.exit("Exiting the program immediately (for debugging purposes)")
+    sys.exit(msg)
