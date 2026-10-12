@@ -1,12 +1,12 @@
 from utils.constants import CSVStandard
+from utils.helper.program_tools import exit_now
+from utils.helper.viewer_data import view_records
 from utils.types import ListOfRecords
 
 _ListOfCoordinates = list[tuple[str | float, str | float]]
 
 
 def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecords):
-    # view_column_values(raw_records_case_status_cleaned, CSVStandard.LATITUDE, unique=True)
-    # view_column_values(raw_records_case_status_cleaned, CSVStandard.LONGITUDE, unique=True)
 
     coordinates = [
         (record[CSVStandard.LATITUDE].strip(), record[CSVStandard.LONGITUDE].strip())
@@ -19,8 +19,20 @@ def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecor
     updated_coordinates = _standardize_coordinate_to_6_decimal_places(
         updated_coordinates
     )
-
     updated_coordinates = _validate_lat_lng_boundary(updated_coordinates)
+
+    cleaned_records = [
+        {
+            **record,
+            CSVStandard.LATITUDE: lat,
+            CSVStandard.LONGITUDE: lng,
+        }
+        for record, (lat, lng) in zip(
+            raw_records_case_status_cleaned, updated_coordinates
+        )
+    ]
+
+    return cleaned_records
 
 
 def _validate_lat_lng_boundary(coordinates: _ListOfCoordinates) -> _ListOfCoordinates:
