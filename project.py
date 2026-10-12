@@ -27,9 +27,8 @@ def main():
     # args = initialize_argparse_engine()
     # raw_records = load_csv_file(args)
     # cleaned_records = clean_csv_file(raw_records)
-    _ = clean_csv_file(
-        load_pickle_file("data/interim/2025_crime_records_case_status_cleaned.pkl")
-    )
+    pkl_file_path = "data/interim/2025_crime_records_case_status_cleaned.pkl"
+    _ = clean_csv_file(load_pickle_file(pkl_file_path))
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -71,6 +70,10 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     # case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
 
     lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
+
+    pkl_file_path = "data/interim/2025_crime_records_lat_lng_cleaned.pkl"
+    pkl_file_path = save_record_to_pickle(pkl_file_path, lat_lng_cleaned)
+    lat_lng_cleaned = load_pickle_file(pkl_file_path)
 
     view_column_values(lat_lng_cleaned, CSVStandard.LATITUDE, unique=False)
     view_column_values(lat_lng_cleaned, CSVStandard.LONGITUDE, unique=False)
