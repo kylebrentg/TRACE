@@ -13,6 +13,7 @@ class BarangayMatchingScorer(TypedDict):
     raw_barangay: str
     official_barangay: str
     rapidfuzz_score: float
+    rapidfuzz_ambiguous: bool
 
 
 class CaseStatusMatchingScorer(TypedDict):

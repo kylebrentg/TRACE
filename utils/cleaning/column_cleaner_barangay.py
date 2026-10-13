@@ -17,7 +17,7 @@ def clean_column_barangay(
     raw_records_type_of_place_cleaned: ListOfRecords,
 ) -> ListOfRecords:
 
-    official_barangay_values = list(CSVStandard.BARANGAY_NAMES)
+    official_barangay_values = sorted(CSVStandard.BARANGAY_NAMES)
 
     raw_barangay_values: list[str] = list(
         {record[CSVStandard.BARANGAY] for record in raw_records_type_of_place_cleaned}
@@ -46,7 +46,7 @@ def match_high_rapidfuzz_result(
             if record[CSVStandard.BARANGAY] != result["raw_barangay"]:
                 continue
 
-            if result["rapidfuzz_score"] >= 90:
+            if result["rapidfuzz_score"] >= 90 and not result["rapidfuzz_ambiguous"]:
                 record = {**record, CSVStandard.BARANGAY: result["official_barangay"]}
 
             break
@@ -63,20 +63,29 @@ def rapidfuzz_barangay_matching(
     rapidfuzz_results: list[BarangayMatchingScorer] = []
 
     for raw_barangay in raw_barangay_values:
-        result_rapidfuzz = process.extractOne(
+        result_rapidfuzz = process.extract(
             raw_barangay,
             official_barangay_values,
             scorer=fuzz.WRatio,
             processor=utils.default_process,
+            limit=2,
         )
 
-        matching_official_barangay, score, _ = result_rapidfuzz
+        (matching_official_barangay, score, _), *remaining_rapidfuzz = result_rapidfuzz
+        runner_up_score = None
+        if remaining_rapidfuzz:
+            _, runner_up_score, _ = next(iter(remaining_rapidfuzz))
 
         rapidfuzz_results.append(
             {
                 "raw_barangay": raw_barangay,
                 "official_barangay": matching_official_barangay,
                 "rapidfuzz_score": round(score, 2),
+                "rapidfuzz_ambiguous": (
+                    score < 100
+                    and runner_up_score is not None
+                    and runner_up_score >= 90
+                ),
             }
         )
     return rapidfuzz_results

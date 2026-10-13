@@ -6,7 +6,7 @@ from tabulate import tabulate
 
 from utils.constants import CSVStandard
 from utils.helper.program_tools import exit_now
-from utils.helper.viewer_data import view_records
+from utils.helper.viewer_data import view_list_items, view_records
 from utils.types import (
     BarangayMatchingScorer,
     CaseStatusMatchingScorer,
@@ -27,7 +27,10 @@ def manual_barangay_matching(
     print("Remaining barangays:")
 
     remaining_rapidfuzz_results = sorted(
-        [{**result} for result in rapidfuzz_results if result["rapidfuzz_score"] < 90],
+        [
+            {**result} for result in rapidfuzz_results
+            if result["rapidfuzz_score"] < 90 or result["rapidfuzz_ambiguous"]
+        ],
         key=lambda x: x["rapidfuzz_score"],
         reverse=True,
     )
@@ -35,15 +38,17 @@ def manual_barangay_matching(
     # raw barangay -> manually chosen official barangay
     manual_matches: dict[str, str] = {}
 
-    remaining_rapidfuzz_results_copy = remaining_rapidfuzz_results.copy()
+    remaining_rapidfuzz_results_copy = sorted(CSVStandard.BARANGAY_NAMES)
     for result in remaining_rapidfuzz_results:
-        display_remaining_barangay(remaining_rapidfuzz_results_copy)
+        view_list_items(remaining_rapidfuzz_results_copy, unique=True)
         while True:
             user_input = int(
                 input(
-                    f"Choose official barangay number to match '{result['raw_barangay']}' (suggestion: {result['official_barangay']}, {result['rapidfuzz_score']}%): "
+                    f"Choose official barangay number to match '{result['raw_barangay']}' (suggestion: {result['official_barangay']}, score: {result['rapidfuzz_score']}; 0 to leave unresolved): "
                 )
             )
+            if user_input == 0:
+                break
             if user_input not in range(1, len(remaining_rapidfuzz_results_copy) + 1):
                 print(
                     "Invalid input. Please choose a number between 1 and",
@@ -52,8 +57,7 @@ def manual_barangay_matching(
                 continue
 
             chosen_result = remaining_rapidfuzz_results_copy[user_input - 1]
-            manual_matches[result["raw_barangay"]] = chosen_result["official_barangay"]
-            remaining_rapidfuzz_results_copy.remove(chosen_result)
+            manual_matches[result["raw_barangay"]] = chosen_result
             break
 
     for record in updated_records:
