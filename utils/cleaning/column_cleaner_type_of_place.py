@@ -59,7 +59,7 @@ def clean_column_type_of_place(
         {
             **record,
             CSVStandard.TYPE_OF_PLACE: match_values_mapping.get(
-                record[CSVStandard.TYPE_OF_PLACE].strip().lower(),
+                general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0].strip().lower(),
                 record[CSVStandard.TYPE_OF_PLACE],
             )
             if general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0] is not None

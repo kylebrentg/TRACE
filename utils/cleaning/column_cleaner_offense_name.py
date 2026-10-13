@@ -71,7 +71,7 @@ def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
         {
             **record,
             CSVStandard.OFFENSE_NAME: match_values_mapping[
-                record[CSVStandard.OFFENSE_NAME].lower()
+                general_string_values_cleaning([record[CSVStandard.OFFENSE_NAME]])[0].lower()
             ]
             if general_string_values_cleaning([record[CSVStandard.OFFENSE_NAME]])[0] is not None
             else None,
