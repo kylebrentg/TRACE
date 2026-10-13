@@ -34,12 +34,12 @@ def test_preserves_valid_coordinates_including_boundaries(coordinate):
     ],
 )
 def test_replaces_out_of_range_or_non_finite_coordinates(coordinate):
-    assert _validate_lat_lng_boundary([coordinate]) == [("None", "None")]
+    assert _validate_lat_lng_boundary([coordinate]) == [(None, None)]
 
 
 @pytest.mark.parametrize(
     "coordinate",
-    [("None", "None"), ("None", 120.0), (15.0, "None")],
+    [(None, None), (None, 120.0), (15.0, None)],
 )
 def test_preserves_existing_missing_value_placeholders(coordinate):
     assert _validate_lat_lng_boundary([coordinate]) == [coordinate]
@@ -59,7 +59,7 @@ def test_handles_empty_input():
 
 
 def test_preserves_batch_order_and_does_not_mutate_input():
-    coordinates = [(15.0, 120.0), ("None", "None"), (-90.0, 180.0)]
+    coordinates = [(15.0, 120.0), (None, None), (-90.0, 180.0)]
     original = coordinates.copy()
 
     result = _validate_lat_lng_boundary(coordinates)

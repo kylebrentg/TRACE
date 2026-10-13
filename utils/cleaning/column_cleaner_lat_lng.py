@@ -1,13 +1,14 @@
 from utils.constants import CSVStandard
+from utils.helper.string_values_cleaner import clean_invisible_characters
 from utils.types import ListOfRecords
 
-_ListOfCoordinates = list[tuple[str | float, str | float]]
+_ListOfCoordinates = list[tuple[str | float | None, str | float | None]]
 
 
 def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecords):
 
     coordinates = [
-        (record[CSVStandard.LATITUDE].strip(), record[CSVStandard.LONGITUDE].strip())
+        (record[CSVStandard.LATITUDE], record[CSVStandard.LONGITUDE])
         for record in raw_records_case_status_cleaned
     ]
 
@@ -52,7 +53,7 @@ def _validate_lat_lng_boundary(coordinates: _ListOfCoordinates) -> _ListOfCoordi
         if not (lat <= lat_north and lat >= lat_south) or not (
             lng <= lng_east and lng >= lng_west
         ):
-            updated_coordinates.append(("None", "None"))
+            updated_coordinates.append((None, None))
 
             continue
 
@@ -88,7 +89,7 @@ def _update_types_from_string_to_float(
     updated_coordinates: _ListOfCoordinates = []
     for coordinate in coordinates:
         lat, lng = coordinate
-        if lat == "None" or lng == "None":
+        if lat is None or lng is None:
             updated_coordinates.append((lat, lng))
             continue
         updated_coordinates.append((float(lat), float(lng)))
@@ -99,13 +100,13 @@ def _update_types_from_string_to_float(
 def _update_invalid_placeholder_values(
     coordinates: _ListOfCoordinates,
 ) -> _ListOfCoordinates:
-    # Sentinel Values: `0.0, 0.0`, `""`, `"N/A"`, or `None`.
+    # If either coordinate is missing, the entire pair is unavailable.
     updated_coordinates: _ListOfCoordinates = []
-    sentinel_values = {"0.0", "''", '""', "n/a", "none"}
+    sentinel_values = CSVStandard.NULL_VALUE_PLACEHOLDERS
     for coordinate in coordinates:
         lat, lng = coordinate
-        if lat in sentinel_values or lng in sentinel_values:
-            updated_coordinates.append(("None", "None"))
+        if lat is None or lng is None or lat in sentinel_values or lng in sentinel_values:
+            updated_coordinates.append((None, None))
             continue
         updated_coordinates.append((lat, lng))
 
@@ -118,12 +119,16 @@ def _standardize_stringified_float_values(
     updated_coordinates = []
     for coordinate in coordinates:
         lat, lng = coordinate
-        if isinstance(lat, str) and isinstance(lng, str):
-            updated_coordinates.append((lat.strip().lower(), lng.strip().lower()))
+        updated_coordinates.append(
+            (
+                clean_invisible_characters(lat).lower() if isinstance(lat, str) else lat,
+                clean_invisible_characters(lng).lower() if isinstance(lng, str) else lng,
+            )
+        )
 
     return updated_coordinates
 
 
 # --- Helper Functions ---
 def __check_none_value(lat, lng) -> bool:
-    return lat == "None" or lng == "None"
+    return lat is None or lng is None

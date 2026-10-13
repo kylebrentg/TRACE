@@ -14,6 +14,9 @@ from utils.constants import CSVStandard
         ("2026-01-01", "00:00:00", date(2026, 1, 1), time(0, 0, 0)),
         ("2026-12-31", "23:59:59", date(2026, 12, 31), time(23, 59, 59)),
         ("2026-10-13", "14:30", date(2026, 10, 13), time(14, 30)),
+        ("2026-10-13", "", date(2026, 10, 13), None),
+        ("2026-10-13", None, date(2026, 10, 13), None),
+        ("2026-10-13", " N/A ", date(2026, 10, 13), None),
         (
             "2026-10-13",
             "14:30:45.123456",
@@ -51,8 +54,6 @@ def test_converts_valid_iso_strings_to_date_and_time(
         ("2026-10-13", "12:60:00"),
         ("2026-10-13", "12:00:60"),
         ("2026-10-13", "not-a-time"),
-        ("2026-10-13", ""),
-        ("2026-10-13", None),
     ],
 )
 def test_rejects_invalid_values_and_reports_the_row(date_str, time_str):

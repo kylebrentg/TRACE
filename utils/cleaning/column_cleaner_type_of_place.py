@@ -61,7 +61,9 @@ def clean_column_type_of_place(
             CSVStandard.TYPE_OF_PLACE: match_values_mapping.get(
                 record[CSVStandard.TYPE_OF_PLACE].strip().lower(),
                 record[CSVStandard.TYPE_OF_PLACE],
-            ),
+            )
+            if general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0] is not None
+            else None,
         }
         for record in raw_records_offense_name_cleaned
     ]

@@ -15,7 +15,7 @@ def clean_column_offense_type(
     ]
 
     values_cleaned = general_string_values_cleaning(offense_type_raw_values)
-    values_cleaned = [value.title() for value in values_cleaned]
+    values_cleaned = [value.title() if value is not None else None for value in values_cleaned]
 
     cleaned_values_for_offense_type: ListOfRecords = [
         {**record, CSVStandard.OFFENSE_TYPE: value}

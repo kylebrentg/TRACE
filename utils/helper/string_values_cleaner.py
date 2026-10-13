@@ -8,10 +8,13 @@ from utils.helper.viewer_data import view_list_items
 # --- General String Values Cleaning ---
 
 
-def general_string_values_cleaning(column_raw_values: list[str]) -> list[str]:
+def general_string_values_cleaning(column_raw_values: list[str | None]) -> list[str | None]:
     cleaned_values = []
 
     for raw_value in column_raw_values:
+        if raw_value is None:
+            cleaned_values.append(None)
+            continue
         cleaned_value = clean_invisible_characters(raw_value)
         cleaned_value = standardize_punctuation(cleaned_value)
         cleaned_value = tidy_spacing(cleaned_value)
