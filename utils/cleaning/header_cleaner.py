@@ -81,7 +81,7 @@ def rapidfuzz_header_matching(
         header["raw_header"] for header in running_headers_matched
     ]
     official_headers_matched = [
-        header["raw_header"] for header in running_headers_matched
+        header["official_header"] for header in running_headers_matched
     ]
 
     headers_ready_for_matching: list[HeaderMatchingScorer] = []
@@ -94,8 +94,13 @@ def rapidfuzz_header_matching(
             continue
 
         result_rapidfuzz = process.extractOne(
-            header, official_headers, scorer=fuzz.WRatio
+            header,
+            [header for header in official_headers if header not in official_headers_matched],
+            scorer=fuzz.WRatio,
         )
+
+        if result_rapidfuzz is None:
+            continue
 
         matching_official_header, score, _ = result_rapidfuzz
 
@@ -112,9 +117,7 @@ def rapidfuzz_header_matching(
     for result in sorted(
         rapidfuzz_results, key=lambda x: x["rapidfuzz_score"], reverse=True
     ):
-        if result["official_header"] in [
-            high_score["official_header"] for high_score in high_score_results
-        ]:
+        if result["official_header"] in official_headers_matched:
             continue
 
         if not result["rapidfuzz_score"] >= 90:
