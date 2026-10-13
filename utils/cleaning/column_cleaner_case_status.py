@@ -41,7 +41,7 @@ def match_case_status_high_rapidfuzz_result(
             if record[CSVStandard.CASE_STATUS] != result["raw_case_status"]:
                 continue
 
-            if result["rapidfuzz_score"] >= 90:
+            if result["rapidfuzz_score"] == 100:
                 record = {**record, CSVStandard.CASE_STATUS: result["official_case_status"]}
 
             break

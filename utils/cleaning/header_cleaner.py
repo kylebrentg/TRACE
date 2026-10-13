@@ -48,6 +48,16 @@ def normalize_headers(raw_records: ListOfRecords) -> ListOfRecords:
 
     Returns:
         RawRecords: The raw records with normalized headers."""
+    for record in raw_records:
+        normalized_headers: dict[str, str] = {}
+        for header in record:
+            normalized_header = header.strip().lower().replace(" ", "_")
+            if normalized_header in normalized_headers:
+                raise ValueError(
+                    f"Headers {normalized_headers[normalized_header]!r} and {header!r} normalize to the same header."
+                )
+            normalized_headers[normalized_header] = header
+
     return [
         {
             header.strip().lower().replace(" ", "_"): value
@@ -156,6 +166,18 @@ def manual_header_matching_step(
 def update_records_headers(
     raw_records: ListOfRecords, headers_to_match: list[HeaderMatchingScorer]
 ) -> ListOfRecords:
+
+    raw_headers_matched = [header["raw_header"] for header in headers_to_match]
+    official_headers_matched = [header["official_header"] for header in headers_to_match]
+
+    if len(raw_headers_matched) != len(set(raw_headers_matched)):
+        raise ValueError("A raw header is matched more than once.")
+    if len(official_headers_matched) != len(set(official_headers_matched)):
+        raise ValueError("An official header is matched more than once.")
+    if not set(CSVStandard.HEADERS).issubset(official_headers_matched):
+        raise ValueError(
+            f"Missing required header matches: {sorted(set(CSVStandard.HEADERS) - set(official_headers_matched))}"
+        )
 
     raw_and_official_headers: dict[str, str] = {
         header["raw_header"]: header["official_header"] for header in headers_to_match
