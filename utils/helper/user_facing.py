@@ -138,7 +138,10 @@ def manual_case_status_matching(
 
     remaining_rapidfuzz_results_copy = sorted(CSVStandard.CASE_CRIME_STATUS)
     for result in remaining_rapidfuzz_results:
-        view_list_items(remaining_rapidfuzz_results_copy, unique=True)
+        print(tabulate(
+            enumerate(remaining_rapidfuzz_results_copy, start=1),
+            headers=["No.", "Official Case Status"], tablefmt="grid"
+        ))
         while True:
             user_input = int(
                 input(
@@ -155,6 +158,17 @@ def manual_case_status_matching(
                 continue
 
             chosen_result = remaining_rapidfuzz_results_copy[user_input - 1]
+            confirm = (
+                input(
+                    f"\nMatch '{result['raw_case_status']}' → '{chosen_result}'? (yes/no): "
+                )
+                .strip()
+                .lower()
+            )
+            if confirm not in ("yes", "y"):
+                print("Match cancelled. Try again.\n")
+                continue
+
             manual_matches[result["raw_case_status"]] = chosen_result
             break
 
