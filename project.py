@@ -1,6 +1,7 @@
 import argparse
 import csv
-import pickle
+
+from rich.console import Console
 
 from utils.cleaning.column_cleaner_barangay import clean_column_barangay
 from utils.cleaning.column_cleaner_case_status import clean_column_case_status
@@ -12,9 +13,7 @@ from utils.cleaning.column_cleaner_type_of_place import clean_column_type_of_pla
 from utils.cleaning.header_cleaner import (
     clean_headers,
 )
-from utils.constants import CSVStandard
-from utils.helper.program_tools import exit_now
-from utils.helper.viewer_data import view_column_values, view_records
+from utils.helper.viewer_data import view_records
 from utils.loading.init_argparse import (
     does_csv_file_exists,
     initialize_argparse_engine,
@@ -24,10 +23,23 @@ from utils.types import ListOfRecords
 
 
 def main():
+    #  1. Ask user csv
     args = initialize_argparse_engine()
     raw_records = load_csv_file(args)
+
+    # 2. Clean records
     cleaned_records = clean_csv_file(raw_records)
-    save_cleaned_records(cleaned_records)
+
+    # 3. Store cleaned records to csv and pkl file
+    csv_cleaned, pkl_cleaned = save_cleaned_records(
+        cleaned_records, args.raw_csv_file_cli_input
+    )
+
+    console = Console()
+    console.print("[bold green]Files saved successfully:[/bold green]")
+    console.print(f"  [green]CSV[/green]: {csv_cleaned}")
+    console.print(f"  [yellow]PKL[/yellow]: {pkl_cleaned}")
+
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -74,13 +86,27 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     cleaned_records = date_time_cleaned.copy()
 
-    view_records(cleaned_records, "Cleaned Records:")
-    exit_now()
-
     return cleaned_records
 
 
-def save_cleaned_records(cleaned_records: ListOfRecords) -> None: ...
+def save_cleaned_records(
+    cleaned_records: ListOfRecords, file_path: str
+) -> tuple[str, str]:
+    base_name = file_path.rsplit(".", 1)[0].replace("raw", "processed") + "_CLEANED"
+    new_csv_file_path = base_name + ".csv"
+
+    # Write to .csv
+    with open(new_csv_file_path, "w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=cleaned_records[0].keys())
+        writer.writeheader()
+        writer.writerows(cleaned_records)
+
+    # Write to .pkl
+    new_pkl_file_path = save_record_to_pickle(
+        base_name + ".pkl", cleaned_records
+    )
+
+    return new_csv_file_path, new_pkl_file_path
 
 
 if __name__ == "__main__":
