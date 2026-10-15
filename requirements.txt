@@ -1,0 +1,8 @@
+dotenv>=0.9.9
+google-genai>=2.28.0
+lorem-text>=3.0
+mypy>=2.3.1
+pytest>=9.1.1
+rapidfuzz>=3.14.6
+rich>=15.0.0
+tabulate>=0.10.0
