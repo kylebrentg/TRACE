@@ -13,12 +13,11 @@ from utils.cleaning.column_cleaner_type_of_place import clean_column_type_of_pla
 from utils.cleaning.header_cleaner import (
     clean_headers,
 )
-from utils.helper.viewer_data import view_records
 from utils.loading.init_argparse import (
     does_csv_file_exists,
     initialize_argparse_engine,
 )
-from utils.loading.pickle import load_pickle_file, save_record_to_pickle
+from utils.loading.pickle import save_record_to_pickle
 from utils.types import ListOfRecords
 
 
