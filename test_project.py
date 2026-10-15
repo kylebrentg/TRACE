@@ -1,4 +1,6 @@
 import argparse
+import csv
+import os
 from datetime import date, time
 
 import pytest
@@ -14,10 +16,11 @@ from project import (
     clean_csv_file,
     clean_headers,
     load_csv_file,
+    save_cleaned_records,
 )
 
 
-# ---- Function 1: load_csv_file ----
+# NOTE: load_csv_file() ----
 def test_load_csv_file_returns_list_of_dicts(tmp_path):
     csv_file = tmp_path / "sample.csv"
     csv_file.write_text(
@@ -80,7 +83,7 @@ def test_load_csv_file_header_only(tmp_path):
         load_csv_file(args)
 
 
-# ---- Function 2: clean_csv_file ----
+# NOTE: clean_csv_file() ----
 def test_clean_csv_file_cleans_every_column():
     raw_records = [
         {
@@ -286,3 +289,33 @@ def test_clean_column_date_time_raises_on_bad_date():
 
     with pytest.raises(ValueError):
         clean_column_date_time(records)
+
+
+# NOTE: save_cleaned_records() ----
+def test_save_cleaned_records_returns_cleaned_file_paths(tmp_path):
+    cleaned_records = [
+        {"offense_type": "Crimes Against Property", "case_status": "Solved"}
+    ]
+    raw_path = str(tmp_path / "2025_crime_records.csv")
+
+    csv_path, pkl_path = save_cleaned_records(cleaned_records, raw_path)
+
+    assert csv_path == str(tmp_path / "2025_crime_records_CLEANED.csv")
+    assert pkl_path == str(tmp_path / "2025_crime_records_CLEANED.pkl")
+    assert os.path.exists(csv_path)
+    assert os.path.exists(pkl_path)
+
+
+def test_save_cleaned_records_writes_rows_to_csv(tmp_path):
+    cleaned_records = [
+        {"offense_type": "Crimes Against Property", "case_status": "Solved"},
+        {"offense_type": "Quasi-Offenses", "case_status": "Under Investigation"},
+    ]
+    raw_path = str(tmp_path / "2025_crime_records.csv")
+
+    csv_path, _ = save_cleaned_records(cleaned_records, raw_path)
+
+    with open(csv_path, newline="") as file:
+        rows = list(csv.DictReader(file))
+
+    assert rows == cleaned_records
