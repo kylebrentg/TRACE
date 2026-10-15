@@ -59,9 +59,11 @@ def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
         }
     )
 
-    client = initialize_gemini_api()
+    client = initialize_gemini_api(CSVStandard.OFFENSE_NAME)
     prompt = offense_name_cleaning_prompt(unique_values)
-    match_values_data = clean_values_with_gemini(prompt, client)
+    match_values_data = clean_values_with_gemini(
+        prompt, client, column_name=CSVStandard.OFFENSE_NAME
+    )
 
     match_values_mapping = {
         match_value.original: match_value.cleaned

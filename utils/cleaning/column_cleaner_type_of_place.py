@@ -1,10 +1,64 @@
 import inspect
 
+from rich.console import Console
+
 from utils.constants import CSVStandard
 from utils.helper.program_tools import display_clean_success
 from utils.helper.string_values_cleaner import general_string_values_cleaning
 from utils.loading.init_gemini import clean_values_with_gemini, initialize_gemini_api
 from utils.types import ListOfRecords
+
+
+def clean_column_type_of_place(
+    raw_records_offense_name_cleaned: ListOfRecords,
+) -> ListOfRecords:
+    type_of_place_raw_values: list[str] = [
+        record[CSVStandard.TYPE_OF_PLACE] for record in raw_records_offense_name_cleaned
+    ]
+
+    # view_list_items(type_of_place_raw_values, "type_of_place Raw Values", unique=True)
+
+    unique_values = list(
+        {
+            value.lower()
+            for value in general_string_values_cleaning(type_of_place_raw_values)
+            if value
+        }
+    )
+
+    client = initialize_gemini_api(CSVStandard.TYPE_OF_PLACE)
+    prompt = _type_of_place_cleaning_prompt(unique_values)
+
+    match_values_data = clean_values_with_gemini(
+        prompt, client, column_name=CSVStandard.TYPE_OF_PLACE
+    )
+
+    match_values_mapping = {
+        match_value.original.strip().lower(): match_value.cleaned
+        for match_value in match_values_data.items
+    }
+
+    # for original, cleaned in match_values_mapping.items():
+    #     print(f"('original', '{original}'): ('cleaned', '{cleaned}')")
+
+    cleaned_values: ListOfRecords = [
+        {
+            **record,
+            CSVStandard.TYPE_OF_PLACE: match_values_mapping.get(
+                general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0]
+                .strip()
+                .lower(),
+                record[CSVStandard.TYPE_OF_PLACE],
+            )
+            if general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0]
+            is not None
+            else None,
+        }
+        for record in raw_records_offense_name_cleaned
+    ]
+
+    display_clean_success(CSVStandard.TYPE_OF_PLACE)
+    return cleaned_values
 
 
 def _type_of_place_cleaning_prompt(values_to_be_cleaned: list[str]) -> str:
@@ -25,49 +79,3 @@ def _type_of_place_cleaning_prompt(values_to_be_cleaned: list[str]) -> str:
         Input values:
         {values_to_be_cleaned}
     """)
-
-
-def clean_column_type_of_place(
-    raw_records_offense_name_cleaned: ListOfRecords,
-) -> ListOfRecords:
-    type_of_place_raw_values: list[str] = [
-        record[CSVStandard.TYPE_OF_PLACE] for record in raw_records_offense_name_cleaned
-    ]
-
-    # view_list_items(type_of_place_raw_values, "type_of_place Raw Values", unique=True)
-
-    unique_values = list(
-        {
-            value.lower()
-            for value in general_string_values_cleaning(type_of_place_raw_values)
-            if value
-        }
-    )
-
-    client = initialize_gemini_api()
-    prompt = _type_of_place_cleaning_prompt(unique_values)
-    match_values_data = clean_values_with_gemini(prompt, client)
-
-    match_values_mapping = {
-        match_value.original.strip().lower(): match_value.cleaned
-        for match_value in match_values_data.items
-    }
-
-    for original, cleaned in match_values_mapping.items():
-        print(f"('original', '{original}'): ('cleaned', '{cleaned}')")
-
-    cleaned_values: ListOfRecords = [
-        {
-            **record,
-            CSVStandard.TYPE_OF_PLACE: match_values_mapping.get(
-                general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0].strip().lower(),
-                record[CSVStandard.TYPE_OF_PLACE],
-            )
-            if general_string_values_cleaning([record[CSVStandard.TYPE_OF_PLACE]])[0] is not None
-            else None,
-        }
-        for record in raw_records_offense_name_cleaned
-    ]
-
-    display_clean_success(CSVStandard.TYPE_OF_PLACE)
-    return cleaned_values
