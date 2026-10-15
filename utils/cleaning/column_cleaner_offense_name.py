@@ -3,7 +3,7 @@ import inspect
 from utils.constants import CSVStandard
 from utils.helper.program_tools import display_clean_success
 from utils.helper.string_values_cleaner import general_string_values_cleaning
-from utils.loading.init_gemini import clean_values_with_gemini, initialize_gemini_api
+from utils.loading.init_gemini import clean_values_from_json, clean_values_with_gemini
 from utils.types import ListOfRecords
 
 
@@ -51,7 +51,7 @@ def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
     offense_name_raw_values: list[str] = [
         record[CSVStandard.OFFENSE_NAME] for record in raw_records_offense_type_cleaned
     ]
-    unique_values = list(
+    unique_values = sorted(
         {
             value.lower()
             for value in general_string_values_cleaning(offense_name_raw_values)
@@ -59,10 +59,9 @@ def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
         }
     )
 
-    client = initialize_gemini_api(CSVStandard.OFFENSE_NAME)
     prompt = offense_name_cleaning_prompt(unique_values)
-    match_values_data = clean_values_with_gemini(
-        prompt, client, column_name=CSVStandard.OFFENSE_NAME
+    match_values_data = clean_values_from_json(
+        column_name=CSVStandard.OFFENSE_NAME
     )
 
     match_values_mapping = {

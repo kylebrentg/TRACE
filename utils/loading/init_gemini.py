@@ -1,4 +1,6 @@
+import json
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from google import genai
@@ -23,6 +25,19 @@ def initialize_gemini_api(column_name: str) -> genai.Client:
 
     console.print(f"[bold green]Gemini initialized for `{column_name}`.")
     return client
+
+
+def clean_values_from_json(*, column_name: str) -> OffenseNameCleaningResponse:
+    response_file = (
+        Path(__file__).resolve().parents[2]
+        / "data" / "interim" / f"gemini_{column_name}.json"
+    )
+    cached_response = json.loads(response_file.read_text(encoding="utf-8"))
+    cleaned_values = OffenseNameCleaningResponse.model_validate(
+        cached_response["response"]
+    )
+    console.print(f"[bold green]Using saved Gemini response for `{column_name}`.")
+    return cleaned_values
 
 
 def clean_values_with_gemini(
@@ -76,6 +91,7 @@ def clean_values_with_gemini(
                 cleaned_values = OffenseNameCleaningResponse.model_validate_json(
                     output_text
                 )
+
 
                 console.print(
                     f"[bold green]Gemini results validated for `{column_name}`. Cleaning request complete."

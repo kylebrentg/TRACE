@@ -38,9 +38,17 @@ def manual_barangay_matching(
     # raw barangay -> manually chosen official barangay
     manual_matches: dict[str, str] = {}
 
-    remaining_rapidfuzz_results_copy = sorted(CSVStandard.BARANGAY_NAMES)
+    remaining_rapidfuzz_results_copy = sorted(
+        set(CSVStandard.BARANGAY_NAMES) - {
+            result["official_barangay"] for result in rapidfuzz_results
+            if result["rapidfuzz_score"] >= 90 and not result["rapidfuzz_ambiguous"]
+        }
+    )
     for result in remaining_rapidfuzz_results:
-        view_list_items(remaining_rapidfuzz_results_copy, unique=True)
+        print(tabulate(
+            enumerate(remaining_rapidfuzz_results_copy, start=1),
+            headers=["No.", "Official Barangay"], tablefmt="grid"
+        ))
         while True:
             user_input = int(
                 input(
@@ -57,6 +65,18 @@ def manual_barangay_matching(
                 continue
 
             chosen_result = remaining_rapidfuzz_results_copy[user_input - 1]
+            confirm = (
+                input(
+                    f"\nMatch '{result['raw_barangay']}' → '{chosen_result}'? (yes/no): "
+                )
+                .strip()
+                .lower()
+            )
+            if confirm not in ("yes", "y"):
+                print("Match cancelled. Try again.\n")
+                continue
+
+            remaining_rapidfuzz_results_copy.pop(user_input - 1)
             manual_matches[result["raw_barangay"]] = chosen_result
             break
 
