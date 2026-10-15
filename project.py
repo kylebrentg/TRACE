@@ -84,7 +84,7 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     view_records(loaded_records, "loaded_records")
 
 
-def func_3(): ...
+def save_cleaned_records(): ...
 
 
 if __name__ == "__main__":
