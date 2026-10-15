@@ -1,7 +1,7 @@
 from rapidfuzz import fuzz, process
 
 from utils.constants import CSVStandard
-from utils.helper.program_tools import exit_now
+from utils.helper.program_tools import display_clean_success, exit_now
 from utils.helper.user_facing import manual_header_matching
 from utils.helper.viewer_data import (
     view_fuzzy_header_matching_results,
@@ -34,6 +34,7 @@ def clean_headers(raw_records: ListOfRecords):
         records_headers_normalized, headers_matched
     )
 
+    display_clean_success("Headers cleaned successfully.")
     return raw_records_headers_updated
 
 
@@ -105,7 +106,11 @@ def rapidfuzz_header_matching(
 
         result_rapidfuzz = process.extractOne(
             header,
-            [header for header in official_headers if header not in official_headers_matched],
+            [
+                header
+                for header in official_headers
+                if header not in official_headers_matched
+            ],
             scorer=fuzz.WRatio,
         )
 
@@ -168,7 +173,9 @@ def update_records_headers(
 ) -> ListOfRecords:
 
     raw_headers_matched = [header["raw_header"] for header in headers_to_match]
-    official_headers_matched = [header["official_header"] for header in headers_to_match]
+    official_headers_matched = [
+        header["official_header"] for header in headers_to_match
+    ]
 
     if len(raw_headers_matched) != len(set(raw_headers_matched)):
         raise ValueError("A raw header is matched more than once.")

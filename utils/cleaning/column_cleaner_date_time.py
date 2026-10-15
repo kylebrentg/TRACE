@@ -1,7 +1,7 @@
 from datetime import date, time
 
 from utils.constants import CSVStandard
-from utils.helper.program_tools import exit_now
+from utils.helper.program_tools import display_clean_success, exit_now
 from utils.helper.string_values_cleaner import general_string_values_cleaning
 from utils.helper.viewer_data import view_column_values, view_list_items, view_records
 from utils.types import ListOfRecords
@@ -43,4 +43,6 @@ def clean_column_date_time(raw_records_lat_lng_cleaned: ListOfRecords):
         for record, dt_obj in zip(raw_records_lat_lng_cleaned, valid_datetime)
     ]
 
+    display_clean_success(CSVStandard.DATE_COMMITTED)
+    display_clean_success(CSVStandard.TIME_COMMITTED)
     return cleaned_values

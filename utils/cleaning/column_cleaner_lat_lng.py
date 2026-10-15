@@ -1,4 +1,5 @@
 from utils.constants import CSVStandard
+from utils.helper.program_tools import display_clean_success
 from utils.helper.string_values_cleaner import clean_invisible_characters
 from utils.types import ListOfRecords
 
@@ -31,6 +32,8 @@ def clean_column_latitude_longitude(raw_records_case_status_cleaned: ListOfRecor
         )
     ]
 
+    display_clean_success(CSVStandard.LATITUDE)
+    display_clean_success(CSVStandard.LONGITUDE)
     return cleaned_records
 
 

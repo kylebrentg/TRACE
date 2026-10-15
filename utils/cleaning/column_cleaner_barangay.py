@@ -1,7 +1,7 @@
 from rapidfuzz import fuzz, process, utils
 
 from utils.constants import CSVStandard
-from utils.helper.program_tools import exit_now
+from utils.helper.program_tools import display_clean_success, exit_now
 from utils.helper.string_values_cleaner import general_string_values_cleaning
 from utils.helper.user_facing import manual_barangay_matching
 from utils.helper.viewer_data import (
@@ -33,6 +33,7 @@ def clean_column_barangay(
 
     cleaned_values = manual_barangay_matching(updated_records, rapidfuzz_results)
 
+    display_clean_success(CSVStandard.BARANGAY)
     return cleaned_values
 
 

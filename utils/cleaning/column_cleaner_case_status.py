@@ -1,7 +1,7 @@
 from rapidfuzz import fuzz, process, utils
 
 from utils.constants import CSVStandard
-from utils.helper.program_tools import exit_now
+from utils.helper.program_tools import display_clean_success, exit_now
 from utils.helper.user_facing import ListOfRecords, manual_case_status_matching
 from utils.helper.viewer_data import (
     view_case_status_fuzzy_matching_results,
@@ -28,6 +28,7 @@ def clean_column_case_status(raw_records_barangay_cleaned: ListOfRecords):
 
     cleaned_values = manual_case_status_matching(updated_records, rapidfuzz_results)
 
+    display_clean_success(CSVStandard.CASE_STATUS)
     return cleaned_values
 
 

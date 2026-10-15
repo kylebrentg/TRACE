@@ -1,7 +1,7 @@
 from codecs import raw_unicode_escape_decode
 
 from utils.constants import CSVStandard
-from utils.helper.program_tools import exit_now
+from utils.helper.program_tools import display_clean_success, exit_now
 from utils.helper.string_values_cleaner import general_string_values_cleaning
 from utils.helper.viewer_data import view_column_values, view_list_items, view_records
 from utils.types import ListOfRecords
@@ -22,4 +22,5 @@ def clean_column_offense_type(
         for record, value in zip(raw_records_headers_cleaned, values_cleaned)
     ]
 
+    display_clean_success(CSVStandard.OFFENSE_TYPE)
     return cleaned_values_for_offense_type

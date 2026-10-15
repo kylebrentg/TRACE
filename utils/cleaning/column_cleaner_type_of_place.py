@@ -1,6 +1,7 @@
 import inspect
 
 from utils.constants import CSVStandard
+from utils.helper.program_tools import display_clean_success
 from utils.helper.string_values_cleaner import general_string_values_cleaning
 from utils.loading.init_gemini import clean_values_with_gemini, initialize_gemini_api
 from utils.types import ListOfRecords
@@ -68,4 +69,5 @@ def clean_column_type_of_place(
         for record in raw_records_offense_name_cleaned
     ]
 
+    display_clean_success(CSVStandard.TYPE_OF_PLACE)
     return cleaned_values

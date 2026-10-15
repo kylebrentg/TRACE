@@ -74,6 +74,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
 
     cleaned_records = date_time_cleaned.copy()
 
+    view_records(cleaned_records, "Cleaned Records:")
+    exit_now()
+
     return cleaned_records
 
 
