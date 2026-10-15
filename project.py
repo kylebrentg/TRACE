@@ -24,12 +24,10 @@ from utils.types import ListOfRecords
 
 
 def main():
-    # Temporary comment to focus on a specific feature instead of starting over again
-    # args = initialize_argparse_engine()
-    # raw_records = load_csv_file(args)
-    # cleaned_records = clean_csv_file(raw_records)
-    pkl_file_path = "data/interim/2025_crime_records_lat_lng_cleaned.pkl"
-    _ = clean_csv_file(load_pickle_file(pkl_file_path))
+    args = initialize_argparse_engine()
+    raw_records = load_csv_file(args)
+    cleaned_records = clean_csv_file(raw_records)
+    save_cleaned_records(cleaned_records)
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -48,43 +46,38 @@ def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
 
 
 def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
-    # Temporary comment. Working on other feature
-    # raw_records_headers_cleaned = clean_headers(raw_records)
-
-    raw_records_lat_lng_cleaned = raw_records.copy()
+    # Header
+    headers_cleaned = clean_headers(raw_records)
 
     # Column 1 of 9
-    # offense_type_cleaned = clean_column_offense_type(raw_records_headers_cleaned)
+    offense_type_cleaned = clean_column_offense_type(headers_cleaned)
     # view_column_values(offense_type_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
     # Column 2 of 9
-    # offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
+    offense_name_cleaned = clean_column_offense_name(offense_type_cleaned)
     # view_column_values(offense_name_cleaned, CSVStandard.OFFENSE_NAME, unique=True)
 
     # Column 3 of 9
-    # type_of_place_cleaned = clean_column_type_of_place(raw_records_offense_name_cleaned)
+    type_of_place_cleaned = clean_column_type_of_place(offense_name_cleaned)
 
     # Column 4 of 9
-    # barangay_cleaned = clean_column_barangay(raw_records_type_of_place_cleaned)
+    barangay_cleaned = clean_column_barangay(type_of_place_cleaned)
 
     # Column 5 of 9
-    # case_status_cleaned = clean_column_case_status(raw_records_barangay_cleaned)
+    case_status_cleaned = clean_column_case_status(barangay_cleaned)
 
     # Column 6, 7  of 9 (lat and lng columns targeted)
-    # lat_lng_cleaned = clean_column_latitude_longitude(raw_records_case_status_cleaned)
+    lat_lng_cleaned = clean_column_latitude_longitude(case_status_cleaned)
 
     # Column 8, 9  of 9 (date and time columns targeted)
-    date_time_cleaned = clean_column_date_time(raw_records_lat_lng_cleaned)
+    date_time_cleaned = clean_column_date_time(lat_lng_cleaned)
 
-    file_path = save_record_to_pickle(
-        "data/interim/2025_crime_records_date_time_cleaned.pkl", date_time_cleaned
-    )
+    cleaned_records = date_time_cleaned.copy()
 
-    loaded_records = load_pickle_file(file_path)
-    view_records(loaded_records, "loaded_records")
+    return cleaned_records
 
 
-def save_cleaned_records(): ...
+def save_cleaned_records(cleaned_records: ListOfRecords) -> None: ...
 
 
 if __name__ == "__main__":
