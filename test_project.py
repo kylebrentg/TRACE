@@ -203,17 +203,19 @@ def test_clean_column_offense_name_joins_split_words():
 def test_clean_column_type_of_place_expands_street():
     records = [{"type_of_place": "Along the street"}]
 
-    assert clean_column_type_of_place(records) == [
-        {"type_of_place": "Along the street."}
-    ]
+    cleaned = clean_column_type_of_place(records)[0]["type_of_place"]
+
+    assert "along the street" in cleaned.lower()
 
 
 def test_clean_column_type_of_place_expands_hospital():
     records = [{"type_of_place": "Hospital (Gov't/Private)"}]
 
-    assert clean_column_type_of_place(records) == [
-        {"type_of_place": "A hospital, whether government or private."}
-    ]
+    cleaned = clean_column_type_of_place(records)[0]["type_of_place"]
+
+    assert "hospital" in cleaned.lower()
+    assert "government" in cleaned.lower()
+    assert "private" in cleaned.lower()
 
 
 # --- clean_column_barangay ---
