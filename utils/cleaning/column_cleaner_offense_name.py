@@ -3,7 +3,11 @@ import inspect
 from utils.constants import CSVStandard
 from utils.helper.program_tools import display_clean_success
 from utils.helper.string_values_cleaner import general_string_values_cleaning
-from utils.loading.init_gemini import clean_values_from_json, clean_values_with_gemini
+from utils.loading.init_gemini import (
+    clean_values_from_json,
+    clean_values_with_gemini,
+    initialize_gemini_api,
+)
 from utils.types import ListOfRecords
 
 
@@ -60,9 +64,15 @@ def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
     )
 
     prompt = offense_name_cleaning_prompt(unique_values)
-    match_values_data = clean_values_from_json(
-        column_name=CSVStandard.OFFENSE_NAME
+    client = initialize_gemini_api(CSVStandard.OFFENSE_NAME)
+
+    match_values_data = clean_values_with_gemini(
+        prompt, client, column_name=CSVStandard.OFFENSE_NAME
     )
+    # For debugging (to avoid multiple API calls):
+    # match_values_data = clean_values_from_json(
+    #     column_name=CSVStandard.OFFENSE_NAME
+    # )
 
     match_values_mapping = {
         match_value.original: match_value.cleaned
@@ -73,9 +83,12 @@ def clean_column_offense_name(raw_records_offense_type_cleaned: ListOfRecords):
         {
             **record,
             CSVStandard.OFFENSE_NAME: match_values_mapping[
-                general_string_values_cleaning([record[CSVStandard.OFFENSE_NAME]])[0].lower()
+                general_string_values_cleaning([record[CSVStandard.OFFENSE_NAME]])[
+                    0
+                ].lower()
             ]
-            if general_string_values_cleaning([record[CSVStandard.OFFENSE_NAME]])[0] is not None
+            if general_string_values_cleaning([record[CSVStandard.OFFENSE_NAME]])[0]
+            is not None
             else None,
         }
         for record in raw_records_offense_type_cleaned

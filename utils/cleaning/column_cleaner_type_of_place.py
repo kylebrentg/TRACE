@@ -5,7 +5,11 @@ from rich.console import Console
 from utils.constants import CSVStandard
 from utils.helper.program_tools import display_clean_success
 from utils.helper.string_values_cleaner import general_string_values_cleaning
-from utils.loading.init_gemini import clean_values_from_json, clean_values_with_gemini
+from utils.loading.init_gemini import (
+    clean_values_from_json,
+    clean_values_with_gemini,
+    initialize_gemini_api,
+)
 from utils.types import ListOfRecords
 
 
@@ -26,11 +30,17 @@ def clean_column_type_of_place(
         }
     )
 
+    client = initialize_gemini_api(CSVStandard.TYPE_OF_PLACE)
     prompt = _type_of_place_cleaning_prompt(unique_values)
 
-    match_values_data = clean_values_from_json(
-        column_name=CSVStandard.TYPE_OF_PLACE
+    match_values_data = clean_values_with_gemini(
+        prompt, client, column_name=CSVStandard.TYPE_OF_PLACE
     )
+
+    # For debugging (to avoid multiple API calls):
+    # match_values_data = clean_values_from_json(
+    #     column_name=CSVStandard.TYPE_OF_PLACE
+    # )
 
     match_values_mapping = {
         match_value.original.strip().lower(): match_value.cleaned
