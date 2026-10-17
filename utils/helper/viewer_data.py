@@ -17,11 +17,16 @@ from utils.types import (
 def view_records(
     raw_records: ListOfRecords, title: str | None = None, unique: bool = False
 ) -> None:
-    """Prints an optional title and the records."""
+    """Prints an optional title and the records in a human-readable format."""
     print("=" * 50)
     if title is not None:
         print(f"Table Title: {title}")
-    print("-" * 25)
+    print("-" * 50)
+
+    if not raw_records:
+        print("  (No records found)")
+        print("-" * 50)
+        return
 
     if unique:
         displayed_records = []
@@ -38,11 +43,22 @@ def view_records(
     records_to_show = displayed_records[:limit] if limit else displayed_records
 
     for index, record in enumerate(records_to_show, start=1):
-        print(f"{index}. {record}", "\n")
+        print(f"[{index}]")
+        if not record:
+            print("    (Empty Record)")
+        else:
+            # Align colons based on the longest key
+            max_key_len = max(len(str(k)) for k in record.keys())
+            for key, val in record.items():
+                label = str(key).replace("_", " ").title()
+                val_str = "None" if val is None else str(val)
+                print(f"    {label:<{max_key_len + 2}}: {val_str}")
+        print()
 
     if limit and len(displayed_records) > limit:
-        print(f"...omitting {len(displayed_records) - limit}")
-    print("-" * 25)
+        print(f"...omitting {len(displayed_records) - limit} more records\n")
+
+    print("-" * 50)
 
 
 def view_record_headers(raw_records: ListOfRecords, title: str | None = None) -> None:

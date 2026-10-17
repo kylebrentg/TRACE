@@ -3,7 +3,6 @@ import csv
 
 from rich.console import Console
 
-from utils.cleaning.cleaning_report import write_cleaning_report
 from utils.cleaning.column_cleaner_barangay import clean_column_barangay
 from utils.cleaning.column_cleaner_case_status import clean_column_case_status
 from utils.cleaning.column_cleaner_date_time import clean_column_date_time
@@ -14,6 +13,7 @@ from utils.cleaning.column_cleaner_type_of_place import clean_column_type_of_pla
 from utils.cleaning.header_cleaner import (
     clean_headers,
 )
+from utils.helper.viewer_data import view_records
 from utils.loading.init_argparse import (
     does_csv_file_exists,
     initialize_argparse_engine,
@@ -40,10 +40,10 @@ def main():
     console.print(f"  [green]CSV[/green]: {csv_cleaned_path}")
     console.print(f"  [yellow]PKL[/yellow]: {pkl_cleaned_path}")
 
-    cleaned_report_file_path = write_cleaning_report(
-        args.raw_csv_file_cli_input, csv_cleaned_path, pkl_cleaned_path
-    )
-    console.print(f"  [blue]Report[/blue]: {cleaned_report_file_path}")
+    # cleaned_report_file_path = write_cleaning_report(
+    #     args.raw_csv_file_cli_input, csv_cleaned_path, pkl_cleaned_path
+    # )
+    # console.print(f"  [blue]Report[/blue]: {cleaned_report_file_path}")
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -89,6 +89,9 @@ def clean_csv_file(raw_records: ListOfRecords) -> ListOfRecords:
     date_time_cleaned = clean_column_date_time(lat_lng_cleaned)
 
     cleaned_records = date_time_cleaned.copy()
+
+    view_records(raw_records, "raw_records")
+    view_records(cleaned_records, "cleaned_records")
 
     return cleaned_records
 
