@@ -3,6 +3,7 @@ import csv
 
 from rich.console import Console
 
+from utils.cleaning.cleaning_report import write_cleaning_report
 from utils.cleaning.column_cleaner_barangay import clean_column_barangay
 from utils.cleaning.column_cleaner_case_status import clean_column_case_status
 from utils.cleaning.column_cleaner_date_time import clean_column_date_time
@@ -30,15 +31,19 @@ def main():
     cleaned_records = clean_csv_file(raw_records)
 
     # 3. Store cleaned records to csv and pkl file
-    csv_cleaned, pkl_cleaned = save_cleaned_records(
+    csv_cleaned_path, pkl_cleaned_path = save_cleaned_records(
         cleaned_records, args.raw_csv_file_cli_input
     )
 
     console = Console()
     console.print("[bold green]Files saved successfully:[/bold green]")
-    console.print(f"  [green]CSV[/green]: {csv_cleaned}")
-    console.print(f"  [yellow]PKL[/yellow]: {pkl_cleaned}")
+    console.print(f"  [green]CSV[/green]: {csv_cleaned_path}")
+    console.print(f"  [yellow]PKL[/yellow]: {pkl_cleaned_path}")
 
+    cleaned_report_file_path = write_cleaning_report(
+        args.raw_csv_file_cli_input, csv_cleaned_path, pkl_cleaned_path
+    )
+    console.print(f"  [blue]Report[/blue]: {cleaned_report_file_path}")
 
 
 def load_csv_file(args: argparse.Namespace) -> ListOfRecords:
@@ -101,9 +106,7 @@ def save_cleaned_records(
         writer.writerows(cleaned_records)
 
     # Write to .pkl
-    new_pkl_file_path = save_record_to_pickle(
-        base_name + ".pkl", cleaned_records
-    )
+    new_pkl_file_path = save_record_to_pickle(base_name + ".pkl", cleaned_records)
 
     return new_csv_file_path, new_pkl_file_path
 
