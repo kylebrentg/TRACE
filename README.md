@@ -4,7 +4,7 @@
 
 #### Description:
 
-T.R.A.C.E. is my CS50P final project: a Python command-line application for cleaning crime records obtained through FOI Philippines (Freedom of Information). Its cleaning rules target the structure and text problems in these records, including inconsistent headers and OCR-damaged words. It takes a CSV and exports a cleaned CSV and a Python pickle file. The application handles data preparation, not crime lookup or safety reporting; it doesn't extract text from scanned documents itself.
+T.R.A.C.E. is my [CS50P](https://certificates.cs50.io/d6eb3530-7c9b-4a51-ad7b-7418250e2204.pdf?size=letter) final project: a Python command-line application for cleaning crime records obtained through FOI Philippines (Freedom of Information). Its cleaning rules target the structure and text problems in these records, including inconsistent headers and OCR-damaged words. It takes a CSV and exports a cleaned CSV and a Python pickle file. The application handles data preparation, not crime lookup or safety reporting; it doesn't extract text from scanned documents itself.
 
 The tool isn't tied to a particular year. You can supply records from 2015 or 2023, for example, provided they contain the fields the pipeline needs. The current workflow handles one year's records in one CSV per run; it doesn't offer year-range processing such as `2015–2022` or combine annual files. The built-in barangay references target Angeles City, Philippines, so using records from another locality requires updating the reference list in `utils/constants.py`.
 
