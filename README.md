@@ -1,6 +1,6 @@
 # T.R.A.C.E. (Text Repair & Angeles Crime Evaluation)
 
-#### Video Demo: TODO (add the YouTube URL before submission)
+#### Video Demo: [T.R.A.C.E. | CS50P Final Project Video Demonstration](https://www.youtube.com/watch?v=dLZFfnqkDTM)
 
 #### Description:
 
